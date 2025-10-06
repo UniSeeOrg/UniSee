@@ -78,3 +78,30 @@ let response = isEqual(a,b); // type "any" is inferred, let the compiler do heav
 - [TypeScript Docs](https://www.typescriptlang.org/docs/)
 - [Prisma ORM](https://www.prisma.io/docs) for database integration
 - [TailwindCSS](https://tailwindcss.com/) for minimal, modern CSS
+
+---
+
+## Clone and Run
+
+```bash
+# 1) Clone the repo
+git clone https://github.com/cs3050-team10/final-project.git
+cd final-project
+
+# 2) Install dependencies
+npm install
+
+# 3) Environment variables (Supabase not set up yet)
+# NOTE: Supabase is not configured yet. This creates a placeholder .env.local.
+# Replace the placeholder values once the Supabase project is created.
+cat > .env.local << 'EOF'
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+EOF
+
+# 4) Run the dev server
+npm run dev
+
+# App will be available at
+# http://localhost:3000
+```
