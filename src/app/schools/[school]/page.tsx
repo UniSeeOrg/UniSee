@@ -24,15 +24,21 @@ export default async function SchoolPage({ params }: { params: Promise<{ school:
   console.log(latest.student.size)
 
 
-  return (
-  <div className= "flex flex-col justify-center items-center">
-      <img src={`https://logo.clearbit.com/${school_url}`}></img>
-      <h1>{name}</h1>
-      <p>{city},{state}</p>
-      <p>{numUndergrads} undergraduates enrolled,  {numGrads} graduates enrolled.</p>
-      <p>{numUndergrads + numGrads} total</p>
-      <a className="underline italic bold "href={school_url.toString()} target="_blank">visit site</a>
-    </div>
+  return(
+    <section className="w-full flex items-start justify-center h-screen text-black bg-gray-200">
+      <div className="flex flex-col w-2/4 rounded-md pt-8 outline-black divide-y-1 divide-gray-300 divide-3/4">
+        <div className= "flex flex-row divide-x-1 divide-gray-300">
+            <img className = "rounded-md p-4" src={`https://logo.clearbit.com/${school_url}`}></img>
+            <div className="pl-8 flex flex-col items-start justify-center">
+             <h1 className="bold text-5xl">{name}</h1>
+             <p className="italic text-xl indent-2">{city},{state}</p>
+            </div>
+        </div>
+          <p>{numUndergrads} undergraduates enrolled,  {numGrads} graduates enrolled.</p>
+          <p>{numUndergrads + numGrads} total</p>
+          <a className="underline italic bold" href={school_url.toString()} >visit site</a>
+      </div>
+    </section>
   );
 }
 
