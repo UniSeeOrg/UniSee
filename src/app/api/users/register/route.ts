@@ -8,7 +8,8 @@ export async function POST(req: NextRequest) {
     const userRow = await createUser({ auth_id, email });
 
     return NextResponse.json({ user: userRow });
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 400 });
+  } catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+    return NextResponse.json({ error: errorMessage }, { status: 400 });
   }
 }

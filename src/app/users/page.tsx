@@ -7,7 +7,7 @@ export default async function UsersPage() {
   { email: "bob@example.com", name: "Bob" },
   { email: "carol@example.com", name: "Carol" },
   ];
-  for (const user of usersToAdd)
+  for (const _user of usersToAdd)
   {
     //Commented out so no duplicates
     //await createUser(user)

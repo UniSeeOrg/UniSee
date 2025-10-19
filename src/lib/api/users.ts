@@ -13,7 +13,7 @@ export async function getAllUsers()
   if (error) throw error;
   return data;
 }
-export async function createUser(user: {auth_id: string, email: string, [key: string]: any})
+export async function createUser(user: {auth_id: string, email: string, [key: string]: unknown})
 {
   const {data, error } = await supabaseServer.from("User").insert([user]).single();
   if (error) throw error;

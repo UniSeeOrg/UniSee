@@ -6,7 +6,7 @@ export default function LoginForm() {
   const [email, emailEnter] = useState<string>("");
   const [password, passwordEnter] = useState<string>(""); 
 
-  async function submit(e: any)
+  async function submit(e: React.FormEvent<HTMLFormElement>)
   {
     e.preventDefault();
     const {data, error} = await supabaseClient.auth.signInWithPassword({email, password});

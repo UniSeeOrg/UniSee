@@ -14,7 +14,7 @@ export default async function SchoolPage({ params }: { params: Promise<{ school:
 
 
   const result = await schoolInfo.results?.[0]
-  const school: any = result.school;
+  const school: { name: string; city: string; state: string; school_url: URL } = result.school;
   const latest = result.latest;
   const {name,city,state,school_url} : {name: string, city: string, state:string,school_url:URL}= school;
   const numUndergrads: number = latest.student.size;

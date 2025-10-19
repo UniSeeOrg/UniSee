@@ -1,12 +1,11 @@
 "use client"
-import { createUser } from "@/lib/api/users";
 import {useState} from "react";
 import { supabaseClient } from "@/lib/supabase/client";
 
 export default function RegisterForm() {
   const [email, emailEnter] = useState<string>("");
   const [password, passwordEnter] = useState<string>(""); 
-  async function submit(e: any)
+  async function submit(e: React.FormEvent<HTMLFormElement>)
   {
     e.preventDefault();
     const {data: authData, error: error} = await supabaseClient.auth.signUp({email, password});
@@ -15,16 +14,15 @@ export default function RegisterForm() {
 
     try 
     {
-      const userRow = await fetch("/api/users/register", {
+      await fetch("/api/users/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ auth_id: authData.user.id, email }),
       });
-      const res = await userRow.json();
       console.log("User row created");
       alert("Sign-up complete!");
     } 
-    catch (err: any) 
+    catch (err: unknown) 
     {
       console.error("Failed to insert user row:", err);
       alert("Sign-up succeeded, but failed to create DB row.");
