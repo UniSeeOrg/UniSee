@@ -4,7 +4,7 @@ import { supabaseClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 
 export default function AccountPage() {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
   const [loading, setLoading] = useState(true);
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
