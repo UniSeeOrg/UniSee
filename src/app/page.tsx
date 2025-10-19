@@ -1,4 +1,6 @@
 import Link from "next/link";
+import LoginForm from "@/components/login/LoginForm";
+import RegisterForm from "@/components/login/RegisterForm";
 
 export default function Home() {
   return (
@@ -28,7 +30,7 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="flex gap-4 justify-center">
+        <div className="flex gap-4 justify-center mb-12">
           <Link 
             href="/schools" 
             className="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors"
@@ -38,6 +40,18 @@ export default function Home() {
           <span className="border border-gray-300 text-gray-500 px-8 py-3 rounded-lg">
             Write a Review (Coming Soon)
           </span>
+        </div>
+
+        {/* Login/Register Section */}
+        <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+          <div className="bg-white border border-gray-200 rounded-lg p-6">
+            <h2 className="text-2xl font-semibold mb-4">Sign In</h2>
+            <LoginForm />
+          </div>
+          <div className="bg-white border border-gray-200 rounded-lg p-6">
+            <h2 className="text-2xl font-semibold mb-4">Sign Up</h2>
+            <RegisterForm />
+          </div>
         </div>
       </div>
     </div>
