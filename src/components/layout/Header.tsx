@@ -12,7 +12,9 @@ export default function Header() {
             <Link href="/schools" className="text-gray-600 hover:text-gray-900">
               Browse Schools
             </Link>
-            <span className="text-gray-400">Coming Soon</span>
+            <Link href="/account" className="text-gray-600 hover:text-gray-900">
+              My Account
+            </Link>
           </nav>
         </div>
       </div>
