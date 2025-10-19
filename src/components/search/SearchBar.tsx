@@ -3,9 +3,9 @@ import { useRouter } from "next/navigation";
 import {useState} from "react";
 export default function SearchBar() {
   const [search, onSearch] = useState<string>("");
-  let router = useRouter();
+  const router = useRouter();
 
-  function submit(e: any)
+  function submit(e: React.FormEvent<HTMLFormElement>)
   {
     e.preventDefault();
     if (search.trim())

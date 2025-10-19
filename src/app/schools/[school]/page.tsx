@@ -1,10 +1,10 @@
-import {fetchSchoolIcon, fetchSchoolInfo} from "./fetch";
+import { fetchSchoolInfo, fetchSchoolIcon } from "./fetch"; // eslint-disable-line @typescript-eslint/no-unused-vars
 
 export default async function SchoolPage({ params }: { params: Promise<{ school: string }> })
 {
-  let { school: slug } = await params;
+  const { school: slug } = await params;
   console.log(slug)
-  let schoolInfo = await fetchSchoolInfo(slug)
+  const schoolInfo = await fetchSchoolInfo(slug)
 
   //TODO: 404 or error page 
   if(! schoolInfo)
@@ -13,12 +13,12 @@ export default async function SchoolPage({ params }: { params: Promise<{ school:
   }
 
 
-  let result = await schoolInfo.results?.[0]
-  let school: any = result.school;
-  let latest = result.latest;
-  let {name,city,state,school_url} : {name: string, city: string, state:string,school_url:URL}= school;
-  let numUndergrads: number = latest.student.size;
-  let numGrads :number = latest.student.grad_students;
+  const result = await schoolInfo.results?.[0]
+  const school: any = result.school;
+  const latest = result.latest;
+  const {name,city,state,school_url} : {name: string, city: string, state:string,school_url:URL}= school;
+  const numUndergrads: number = latest.student.size;
+  const numGrads :number = latest.student.grad_students;
 
   //Log school info if shit gets messy
   console.log(latest.student.size)
