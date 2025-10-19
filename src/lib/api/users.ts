@@ -1,5 +1,5 @@
 import { supabaseClient } from "@/lib/supabase/client";
-import { supabaseServer } from "@/lib/supabase/client";
+import { supabaseServer } from "@/lib/supabase/server";
 
 export async function getUser(username: string)
 {
@@ -13,7 +13,7 @@ export async function getAllUsers()
   if (error) throw error;
   return data;
 }
-export async function createUser(user: { email: string; name: string })
+export async function createUser(user: {auth_id: string, email: string, [key: string]: any})
 {
   const {data, error } = await supabaseServer.from("User").insert([user]).single();
   if (error) throw error;
