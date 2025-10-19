@@ -1,5 +1,5 @@
-import { getAllUsers } from "@/lib/api/users";
-import {createUser } from "@/lib/api/users"
+import { getAllUsers, createUser } from "@/lib/api/users"; // eslint-disable-line @typescript-eslint/no-unused-vars
+
 export default async function UsersPage() {
 
   const usersToAdd= [
@@ -7,7 +7,7 @@ export default async function UsersPage() {
   { email: "bob@example.com", name: "Bob" },
   { email: "carol@example.com", name: "Carol" },
   ];
-  for (let user of usersToAdd)
+  for (const user of usersToAdd)
   {
     //Commented out so no duplicates
     //await createUser(user)
@@ -17,7 +17,7 @@ export default async function UsersPage() {
   return (
     <div>
       <h1>Users: </h1>
-      {users.map(user => (<div>Name: {user.name} Email: {user.email}</div>))}
+      {users.map(user => (<div key={user.id}>Name: {user.name} Email: {user.email}</div>))}
 
     </div>
   );
