@@ -6,6 +6,10 @@ import { useRouter } from "next/navigation";
 export default function AccountPage() {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [isLogin, setIsLogin] = useState(true);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [authLoading, setAuthLoading] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -19,7 +23,56 @@ export default function AccountPage() {
 
   const handleLogout = async () => {
     await supabaseClient.auth.signOut();
+    setUser(null);
     router.push("/");
+  };
+
+  const handleAuth = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setAuthLoading(true);
+
+    try {
+      if (isLogin) {
+        // Login
+        const { data, error } = await supabaseClient.auth.signInWithPassword({
+          email,
+          password,
+        });
+        if (error) {
+          alert(error.message);
+        } else if (data.user) {
+          setUser(data.user);
+          alert(`Welcome back, ${data.user.email}!`);
+        }
+      } else {
+        // Sign up
+        const { data: authData, error: authError } = await supabaseClient.auth.signUp({
+          email,
+          password,
+        });
+        if (authError) {
+          alert(authError.message);
+        } else if (authData.user) {
+          // Create user row in database
+          try {
+            await fetch("/api/users/register", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ auth_id: authData.user.id, email }),
+            });
+            alert("Sign-up complete! Please check your email to confirm your account.");
+          } catch (err) {
+            console.error("Failed to create user row:", err);
+            alert("Sign-up succeeded, but failed to create user profile.");
+          }
+        }
+      }
+    } catch (err) {
+      console.error("Auth error:", err);
+      alert("An error occurred. Please try again.");
+    } finally {
+      setAuthLoading(false);
+    }
   };
 
   if (loading) {
@@ -36,15 +89,78 @@ export default function AccountPage() {
   if (!user) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Not Logged In</h1>
-          <p className="text-gray-600 mb-6">You need to be logged in to view this page.</p>
-          <button
-            onClick={() => router.push("/")}
-            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            Go Home
-          </button>
+        <div className="max-w-md w-full mx-auto">
+          <div className="bg-white rounded-lg shadow-sm border p-8">
+            <div className="text-center mb-6">
+              <h1 className="text-2xl font-bold text-gray-900 mb-2">
+                {isLogin ? "Log In" : "Sign Up"}
+              </h1>
+              <p className="text-gray-600">
+                {isLogin ? "Welcome back to UniSee" : "Join UniSee to share your college experience"}
+              </p>
+            </div>
+
+            <form onSubmit={handleAuth} className="space-y-4">
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                  Email
+                </label>
+                <input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Enter your email"
+                  required
+                />
+              </div>
+
+              <div>
+                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+                  Password
+                </label>
+                <input
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Enter your password"
+                  required
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={authLoading}
+                className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                {authLoading ? "Loading..." : (isLogin ? "Log In" : "Sign Up")}
+              </button>
+            </form>
+
+            <div className="mt-6 text-center">
+              <p className="text-sm text-gray-600">
+                {isLogin ? "Don't have an account?" : "Already have an account?"}
+                <button
+                  onClick={() => setIsLogin(!isLogin)}
+                  className="ml-1 text-blue-600 hover:text-blue-800 font-medium"
+                >
+                  {isLogin ? "Sign up" : "Log in"}
+                </button>
+              </p>
+            </div>
+
+            <div className="mt-6 pt-6 border-t border-gray-200 text-center">
+              <button
+                onClick={() => router.push("/")}
+                className="text-sm text-gray-500 hover:text-gray-700"
+              >
+                ← Back to Home
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     );
