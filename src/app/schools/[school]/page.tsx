@@ -1,4 +1,5 @@
 import { fetchSchoolInfo, fetchSchoolIcon } from "./fetch"; // eslint-disable-line @typescript-eslint/no-unused-vars
+import Image from "next/image";
 
 export default async function SchoolPage({ params }: { params: Promise<{ school: string }> })
 {
@@ -32,10 +33,12 @@ export default async function SchoolPage({ params }: { params: Promise<{ school:
           <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
             {/* School Logo */}
             <div className="flex-shrink-0">
-              <img 
+              <Image 
                 className="w-20 h-20 md:w-24 md:h-24 rounded-lg shadow-md object-contain bg-gray-100" 
                 src={`https://logo.clearbit.com/${school_url}`}
                 alt={`${name} logo`}
+                width={96}
+                height={96}
               />
             </div>
             
