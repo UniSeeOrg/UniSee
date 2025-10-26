@@ -8,37 +8,36 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-model Post {
-  id        Int     @id @default(autoincrement())
-  title     String
-  content   String?
-  published Boolean @default(false)
-  authorId  Int?
-  author    User?   @relation(fields: [authorId], references: [id])
-}
-
 model User {
   id      Int      @id @default(autoincrement())
   email   String   @unique
   name    String?
   auth_id String?  @db.Uuid
-  posts   Post[]
-  Review  Review[]
+  Post    Post[]
+  reviews Review[]
 }
 
 model Review {
-  id       BigInt  @id @unique @default(autoincrement())
-  title    String  @default("")
-  content  String  @default("")
-  authorId Int
-  schoolId String  @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  Rating   Int?
-  User     User    @relation(fields: [authorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  schools  schools @relation(fields: [schoolId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  id        BigInt   @id @unique @default(autoincrement())
+  title     String   @default("")
+  content   String   @default("")
+  authorId  Int
+  schoolId  String   @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  Rating    Int?
+  rating    Int?
+  academics Int?
+  social    Int?
+  food      Int?
+  housing   Int?
+  career    Int?
+  tags      String[]
+  major     String?
+  author    User     @relation(fields: [authorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  school    School   @relation(fields: [schoolId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
-model schools {
+model School {
   id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name            String
   city            String?
@@ -48,5 +47,16 @@ model schools {
   school_url      String?
   external_source String?
   external_id     String?  @unique
-  Review          Review[]
+  reviews         Review[]
+
+  @@map("schools")
+}
+
+model Post {
+  id        Int     @id @default(autoincrement())
+  title     String
+  content   String?
+  published Boolean @default(false)
+  authorId  Int?
+  User      User?   @relation(fields: [authorId], references: [id])
 }
