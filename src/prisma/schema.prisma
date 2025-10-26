@@ -18,8 +18,35 @@ model Post {
 }
 
 model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
-  posts Post[]
+  id      Int      @id @default(autoincrement())
+  email   String   @unique
+  name    String?
+  auth_id String?  @db.Uuid
+  posts   Post[]
+  Review  Review[]
+}
+
+model Review {
+  id       BigInt  @id @unique @default(autoincrement())
+  title    String  @default("")
+  content  String  @default("")
+  authorId Int
+  schoolId String  @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  Rating   Int?
+  User     User    @relation(fields: [authorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  schools  schools @relation(fields: [schoolId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model schools {
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name            String
+  city            String?
+  state           String?
+  type            String?
+  size            Int?
+  school_url      String?
+  external_source String?
+  external_id     String?  @unique
+  Review          Review[]
 }
