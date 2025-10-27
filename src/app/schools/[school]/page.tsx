@@ -1,4 +1,5 @@
 import { fetchSchoolInfo, fetchSchoolIcon } from "./fetch"; // eslint-disable-line @typescript-eslint/no-unused-vars
+import AddReviewSection from "@/components/school/AddReviewSection";
 import Image from "next/image";
 
 export default async function SchoolPage({ params }: { params: Promise<{ school: string }> })
@@ -21,6 +22,9 @@ export default async function SchoolPage({ params }: { params: Promise<{ school:
   const numUndergrads: number = latest.student.size;
   const numGrads :number = latest.student.grad_students;
 
+
+  //TODO: fetch school uuid from db (later integration)
+  let schoolId = "31862546-fe57-4e3e-801c-4a16f9acfabb"
   //Log school info if shit gets messy
   console.log(latest.student.size)
 
@@ -124,9 +128,7 @@ export default async function SchoolPage({ params }: { params: Promise<{ school:
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
               
               <div className="space-y-3">
-                <button className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors">
-                  Write a Review
-                </button>
+                <AddReviewSection schoolId={schoolId} />
                 <button className="w-full bg-gray-100 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-200 transition-colors">
                   Add to Favorites
                 </button>
