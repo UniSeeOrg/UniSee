@@ -4,9 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build --turbopack",
+    "build": "prisma generate --schema=src/prisma/schema.prisma && next build --turbopack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "postinstall": "prisma generate --schema=src/prisma/schema.prisma"
   },
   "dependencies": {
     "@prisma/client": "^6.18.0",
