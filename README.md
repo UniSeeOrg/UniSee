@@ -91,12 +91,18 @@ cd final-project
 # 2) Install dependencies
 npm install
 
-# 3) Environment variables (Supabase not set up yet)
-# NOTE: Supabase is not configured yet. This creates a placeholder .env.local.
-# Replace the placeholder values once the Supabase project is created.
+# 3) Environment variables (Contact team for credentials)
+# Create .env.local with the following structure:
+# NOTE: Contact the team for actual Supabase credentials
 cat > .env.local << 'EOF'
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+# For prisma
+DATABASE_URL=your_database_url_here
+DIRECT_URL=your_direct_url_here
+
+# Supabase client environment variables
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url_here
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key_here
+SUPABASE_SERVICE_KEY=your_service_key_here
 EOF
 
 # 4) Run the dev server
@@ -104,4 +110,24 @@ npm run dev
 
 # App will be available at
 # http://localhost:3000
+
+## Testing Sprint 1 Features
+
+### Authentication
+1. Go to https://unisee.vercel.app/account or http://localhost:3000/account (if running)
+2. Click "Sign up" to create a new account
+3. Use the "Log in" form to sign in with existing credentials
+4. View your account information when logged in
+5. Use "Sign Out" to log out
+
+### School Browsing
+1. Go to http://localhost:3000/schools
+2. Search for any school name (e.g., "Harvard", "MIT", "Stanford")
+3. Click on search results to view detailed school information
+4. Browse school details including enrollment, location, and website
+
+### Database Integration
+- User accounts are stored in Supabase
+- Schools data is fetched from College Scorecard API
+- All authentication is handled through Supabase Auth
 ```

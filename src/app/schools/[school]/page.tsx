@@ -1,5 +1,6 @@
 import { fetchSchoolInfo, fetchSchoolIcon } from "./fetch"; // eslint-disable-line @typescript-eslint/no-unused-vars
 import AddReviewSection from "@/components/school/AddReviewSection";
+import ReviewsDisplay from "@/components/school/ReviewsDisplay";
 import Image from "next/image";
 
 export default async function SchoolPage({ params }: { params: Promise<{ school: string }> })
@@ -120,6 +121,9 @@ export default async function SchoolPage({ params }: { params: Promise<{ school:
                 </div>
               </div>
             </div>
+
+            {/* Reviews Section */}
+            <ReviewsDisplay schoolId={schoolId} />
           </div>
 
           {/* Right Column - Quick Actions */}

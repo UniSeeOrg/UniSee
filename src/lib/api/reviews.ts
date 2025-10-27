@@ -10,3 +10,8 @@ export async function createReview(review: Review) {
   });
   return await res.json();
 }
+
+export async function getReviews(schoolId: string) {
+  const res = await fetch(`/api/reviews/get?schoolId=${schoolId}`);
+  return await res.json();
+}
