@@ -12,7 +12,7 @@ model User {
   id      Int      @id @default(autoincrement())
   email   String   @unique
   name    String?
-  auth_id String?  @db.Uuid
+  auth_id String?  @unique @db.Uuid
   Post    Post[]
   reviews Review[]
 }
@@ -21,7 +21,6 @@ model Review {
   id        BigInt   @id @unique @default(autoincrement())
   title     String   @default("")
   content   String   @default("")
-  authorId  Int
   schoolId  String   @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   Rating    Int?
   rating    Int?
@@ -32,7 +31,8 @@ model Review {
   career    Int?
   tags      String[]
   major     String?
-  author    User     @relation(fields: [authorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  authorId  String?  @db.Uuid
+  author    User?    @relation(fields: [authorId], references: [auth_id], onDelete: NoAction, onUpdate: NoAction)
   school    School   @relation(fields: [schoolId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
