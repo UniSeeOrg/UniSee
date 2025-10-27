@@ -20,7 +20,7 @@ export default function ReviewForm({ closeForm, schoolId, authorId }: { closeFor
     schoolId: schoolId// TODO: fill in current school ID before submit
   });
 
-  const handleChange = (field: string, value: any) => 
+  const handleChange = (field: string, value: unknown) => 
   {
     setForm(prev => ({ ...prev, [field]: value }));
   };

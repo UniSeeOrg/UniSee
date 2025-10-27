@@ -4,10 +4,9 @@ import { supabaseClient } from "@/lib/supabase/client";
 import ReviewButton from "./ReviewButton";
 import ReviewForm from "./ReviewForm";
 export default function AddReviewSection({schoolId}: { schoolId: string}) {
-  let [reviewToggle, setReviewToggle] = useState(false); // Start with form hidden 
+  const [reviewToggle, setReviewToggle] = useState(false); // Start with form hidden 
 
   const [user, setUser] = useState<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
-  let userId: number;
   useEffect(() => {
     const getUser = async () => {
       const { data: { user } } = await supabaseClient.auth.getUser();

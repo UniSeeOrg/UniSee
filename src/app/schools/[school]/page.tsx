@@ -25,7 +25,7 @@ export default async function SchoolPage({ params }: { params: Promise<{ school:
 
 
   //TODO: fetch school uuid from db (later integration)
-  let schoolId = "31862546-fe57-4e3e-801c-4a16f9acfabb"
+  const schoolId = "31862546-fe57-4e3e-801c-4a16f9acfabb"
   //Log school info if shit gets messy
   console.log(latest.student.size)
 

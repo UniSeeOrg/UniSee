@@ -7,7 +7,7 @@ export async function POST(req: NextRequest) {
   {
     const review: Review = await req.json();
 
-    const { id, ...reviewData } = review;
+    const { id: _id, ...reviewData } = review; // eslint-disable-line @typescript-eslint/no-unused-vars
     const newReview = await prisma.review.create({ data: reviewData });
     return NextResponse.json(newReview);
   } 
