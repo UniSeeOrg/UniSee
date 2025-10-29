@@ -3,8 +3,16 @@ import { useEffect, useState } from "react";
 import { supabaseClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 
+interface UserProfile {
+  id: string;
+  email: string;
+  created_at: string;
+  is_verified?: boolean;
+}
+
 export default function AccountPage() {
   const [user, setUser] = useState<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
@@ -16,6 +24,24 @@ export default function AccountPage() {
     const getUser = async () => {
       const { data: { user } } = await supabaseClient.auth.getUser();
       setUser(user);
+      
+      // Fetch user profile from database if logged in
+      if (user) {
+        try {
+          const profileResponse = await supabaseClient
+            .from('User')
+            .select('*')
+            .eq('auth_id', user.id)
+            .single();
+          
+          if (profileResponse.data) {
+            setUserProfile(profileResponse.data);
+          }
+        } catch (err) {
+          console.error('Error fetching user profile:', err);
+        }
+      }
+      
       setLoading(false);
     };
     getUser();
@@ -176,7 +202,19 @@ export default function AccountPage() {
             <div className="space-y-4">
               <div>
                 <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">Email</h3>
-                <p className="mt-1 text-lg text-gray-900">{user.email}</p>
+                <div className="mt-1 flex items-center gap-2">
+                  <p className="text-lg text-gray-900">{user.email}</p>
+                  {userProfile?.is_verified && (
+                    <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium">
+                      ✓ edu-verified
+                    </span>
+                  )}
+                  {userProfile && !userProfile.is_verified && (
+                    <span className="px-2 py-1 bg-gray-100 text-gray-600 rounded-full text-xs font-medium">
+                      ⚠ Not verified
+                    </span>
+                  )}
+                </div>
               </div>
               
               <div>

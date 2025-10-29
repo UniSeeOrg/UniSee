@@ -9,12 +9,13 @@ datasource db {
 }
 
 model User {
-  id      Int      @id @default(autoincrement())
-  email   String   @unique
-  name    String?
-  auth_id String?  @unique @db.Uuid
-  Post    Post[]
-  reviews Review[]
+  id          Int      @id @default(autoincrement())
+  email       String   @unique
+  name        String?
+  auth_id     String?  @unique @db.Uuid
+  is_verified Boolean  @default(false)
+  Post        Post[]
+  reviews     Review[]
 }
 
 model Review {

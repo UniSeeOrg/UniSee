@@ -1,11 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createUser } from "@/lib/api/users";
+import { isEduEmail } from "@/lib/utils/verification";
 
 export async function POST(req: NextRequest) {
   try {
     const { auth_id, email } = await req.json();
 
-    const userRow = await createUser({ auth_id, email });
+    // Check if email is a .edu email
+    const is_verified = isEduEmail(email);
+
+    const userRow = await createUser({ auth_id, email, is_verified });
 
     return NextResponse.json({ user: userRow });
   } catch (err: unknown) {
