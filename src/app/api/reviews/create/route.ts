@@ -15,7 +15,13 @@ export async function POST(req: NextRequest) {
     
     console.log("Review created successfully:", newReview);
     
-    return NextResponse.json(newReview);
+    // Convert BigInt id to string for JSON serialization
+    const serializedReview = {
+      ...newReview,
+      id: newReview.id.toString(),
+    };
+    
+    return NextResponse.json(serializedReview);
   } 
   catch (error) 
   {
