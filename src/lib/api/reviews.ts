@@ -8,6 +8,12 @@ export async function createReview(review: Review) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(review),
   });
+  
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({ error: 'Failed to create review' }));
+    throw new Error(errorData.error || `HTTP error! status: ${res.status}`);
+  }
+  
   return await res.json();
 }
 

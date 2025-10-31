@@ -8,11 +8,19 @@ export async function POST(req: NextRequest) {
     const review: Review = await req.json();
 
     const { id: _id, ...reviewData } = review; // eslint-disable-line @typescript-eslint/no-unused-vars
+    
+    console.log("Creating review with data:", reviewData);
+    
     const newReview = await prisma.review.create({ data: reviewData });
+    
+    console.log("Review created successfully:", newReview);
+    
     return NextResponse.json(newReview);
   } 
   catch (error) 
   {
-    return NextResponse.json({ error: (error as Error).message }, { status: 500 });
+    console.error("Error creating review:", error);
+    const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }

@@ -45,10 +45,15 @@ export default function ReviewForm({ closeForm, schoolId, authorId }: { closeFor
     {
       const newReview = await createReview(form);
       console.log("Review submitted:", newReview);
+      alert("Review submitted successfully!");
+      closeForm();
+      // Refresh the page to show the new review
+      window.location.reload();
     } catch (err) {
       console.error("Error submitting review:", err);
+      const errorMessage = err instanceof Error ? err.message : "Failed to submit review. Please try again.";
+      alert(`Error: ${errorMessage}`);
     }
-    closeForm()
   }
   return (
     <div className="fixed inset-0 text-gray-500 flex items-center justify-center bg-black/50">
