@@ -5,18 +5,38 @@ export async function GET(req: NextRequest) {
   try {
     const searchParams = req.nextUrl.searchParams;
     const schoolId = searchParams.get("schoolId");
+    const sortBy = searchParams.get("sortBy") || "newest"; // newest, oldest, highest, lowest
+    const minRating = searchParams.get("minRating");
 
     if (!schoolId) {
       return NextResponse.json({ error: "schoolId is required" }, { status: 400 });
     }
 
+    // Build where clause
+    const whereClause: any = { // eslint-disable-line @typescript-eslint/no-explicit-any
+      schoolId: schoolId,
+    };
+
+    // Filter by minimum rating if provided
+    if (minRating) {
+      whereClause.rating = {
+        gte: parseInt(minRating),
+      };
+    }
+
+    // Build orderBy clause
+    let orderBy: any = { id: "desc" }; // eslint-disable-line @typescript-eslint/no-explicit-any
+    if (sortBy === "oldest") {
+      orderBy = { id: "asc" };
+    } else if (sortBy === "highest") {
+      orderBy = { rating: "desc" };
+    } else if (sortBy === "lowest") {
+      orderBy = { rating: "asc" };
+    }
+
     const reviews = await prisma.review.findMany({
-      where: {
-        schoolId: schoolId,
-      },
-      orderBy: {
-        id: "desc", // Newest first
-      },
+      where: whereClause,
+      orderBy: orderBy,
     });
 
     // Format the response to include user info if author exists

@@ -22,11 +22,18 @@ export default function AccountPage() {
 
   useEffect(() => {
     const getUser = async () => {
-      const { data: { user } } = await supabaseClient.auth.getUser();
-      setUser(user);
-      
-      // Fetch user profile from database if logged in
-      if (user) {
+      try {
+        const { data: { user }, error } = await supabaseClient.auth.getUser();
+        
+        if (error || !user) {
+          setUser(null);
+          setLoading(false);
+          return;
+        }
+        
+        setUser(user);
+        
+        // Fetch user profile from database if logged in
         try {
           const profileResponse = await supabaseClient
             .from('User')
@@ -40,9 +47,13 @@ export default function AccountPage() {
         } catch (err) {
           console.error('Error fetching user profile:', err);
         }
+      } catch (err) {
+        // Silently handle auth errors (user not logged in or expired session)
+        console.log('Auth check failed (user may not be logged in):', err);
+        setUser(null);
+      } finally {
+        setLoading(false);
       }
-      
-      setLoading(false);
     };
     getUser();
   }, []);

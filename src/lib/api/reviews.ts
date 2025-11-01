@@ -17,7 +17,23 @@ export async function createReview(review: Review) {
   return await res.json();
 }
 
-export async function getReviews(schoolId: string) {
-  const res = await fetch(`/api/reviews/get?schoolId=${schoolId}`);
+export async function getReviews(
+  schoolId: string,
+  options?: {
+    sortBy?: "newest" | "oldest" | "highest" | "lowest";
+    minRating?: number;
+  }
+) {
+  const params = new URLSearchParams({ schoolId });
+  
+  if (options?.sortBy) {
+    params.append("sortBy", options.sortBy);
+  }
+  
+  if (options?.minRating !== undefined) {
+    params.append("minRating", options.minRating.toString());
+  }
+  
+  const res = await fetch(`/api/reviews/get?${params.toString()}`);
   return await res.json();
 }
