@@ -1,4 +1,8 @@
+import { deleteReview } from "@/lib/api/reviews";
+
+  {/* adding some new values to reviewcardprops*/}
 interface ReviewCardProps {
+  id: string;
   title: string;
   content: string;
   rating?: number;
@@ -13,9 +17,15 @@ interface ReviewCardProps {
   career?: number;
   tags?: string[];
   major?: string;
+  userEmail: string | null;
+  onDelete: (deletedId: string) => void;
+}
+interface UserProfile {
+  is_verified?: boolean;
 }
 
 export default function ReviewCard({
+  id,
   title,
   content,
   rating,
@@ -27,15 +37,40 @@ export default function ReviewCard({
   career,
   tags,
   major,
+  userEmail,
+  onDelete,
 }: ReviewCardProps) {
   const renderStars = (value?: number) => {
     if (!value) return null;
     return "⭐".repeat(value);
   };
+  console.log(id)
+
+  {/* wrapping onDelete callback from parent in async function */}
+  async function handleDelete (){
+    try {
+      await deleteReview(parseInt(id));
+      onDelete(id); 
+      console.log("deleted review:", id)
+    } catch (err) {
+      console.error(err);
+      alert("Failed to delete review");
+    }
+  };
 
   return (
     <div className="bg-white border border-gray-200 rounded-lg p-6 mb-4">
       <div className="mb-3">
+
+        {/* Delete functionality using onDelete callback from parent*/}
+        {userEmail && author?.email === userEmail && (
+          <button
+            className="text-red-600 text-sm hover:underline"
+            onClick={handleDelete}
+          >
+            Delete
+          </button>
+        )}
         <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
         {author && (
           <p className="text-sm text-gray-500">{author.name || author.email}</p>

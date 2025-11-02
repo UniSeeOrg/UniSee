@@ -1,5 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
+import { supabaseClient } from "@/lib/supabase/client";
+
 import { getReviews } from "@/lib/api/reviews";
 import ReviewCard from "./ReviewCard";
 
@@ -20,7 +22,9 @@ interface Review {
   tags?: string[];
   major?: string;
 }
-
+interface UserProfile {
+  is_verified?: boolean;
+}
 export default function ReviewsDisplay({ schoolId }: { schoolId: string }) {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [filteredReviews, setFilteredReviews] = useState<Review[]>([]);
@@ -28,6 +32,55 @@ export default function ReviewsDisplay({ schoolId }: { schoolId: string }) {
   const [sortBy, setSortBy] = useState<"newest" | "oldest" | "highest" | "lowest">("newest");
   const [minRating, setMinRating] = useState<number | undefined>(undefined);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
+
+
+
+  {/* Using same getUser setup from AddReviewSection, TODO: optimize this a little*/}
+  const [user, setUser] = useState<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  useEffect(() => {
+    const getUser = async () => {
+      try {
+        const { data: { user }, error } = await supabaseClient.auth.getUser();
+        if (error || !user) {
+          setUser(null);
+          return;
+        }
+        setUser(user);
+      
+        // Fetch user profile to check verification status
+        try {
+          console.log('AddReviewSection: Attempting to fetch profile for:', user.email);
+          console.log('AddReviewSection: User ID:', user.id);
+          
+          // Try using auth_id instead
+          const profileResponse = await supabaseClient
+            .from('User')
+            .select('is_verified, email, auth_id')
+            .eq('auth_id', user.id)
+            .maybeSingle(); // Use maybeSingle instead of single to avoid error on no rows
+          
+          //console.log('AddReviewSection: Profile fetch response:', profileResponse);
+          if (profileResponse.data) {
+            //console.log('AddReviewSection: Setting userProfile to:', profileResponse.data);
+            setUserProfile(profileResponse.data);
+
+          } else if (profileResponse.error) {
+            //console.error('AddReviewSection: Fetch error:', profileResponse.error);
+          } else {
+            //console.log('AddReviewSection: No profile found for user:', user.id);
+          }
+        } catch (err) {
+          console.error('Error fetching user profile:', err);
+        }
+      } catch (err) {
+        // Silently handle auth errors (user not logged in or expired session)
+        console.log('Auth check failed (user may not be logged in):', err);
+        setUser(null);
+      }
+    };
+    getUser();
+  }, []);
 
   useEffect(() => {
     const fetchReviews = async () => {
@@ -84,6 +137,12 @@ export default function ReviewsDisplay({ schoolId }: { schoolId: string }) {
   }
 
   const availableTags = ["in-state", "out-of-state", "transfer", "international"];
+
+  {/* Automatically refreshes reviews without reloading page, listens for an eventChange in children components (reviewCard)*/}
+  const handleReviewDelete = (deletedId: string) => {
+    setReviews((prev) => prev.filter((r) => r.id !== deletedId));
+    setFilteredReviews((prev) => prev.filter((r) => r.id !== deletedId));
+  };
 
   return (
     <div className="mt-8">
@@ -163,13 +222,15 @@ export default function ReviewsDisplay({ schoolId }: { schoolId: string }) {
       </div>
 
       {/* Reviews List */}
+
+      {/* ReviewCard has some new props, onDelete callback method and user if logged in*/}
       {filteredReviews.length === 0 ? (
         <div className="text-center py-8 text-gray-500">
           No reviews match your filters. Try adjusting your search criteria.
         </div>
       ) : (
         filteredReviews.map((review) => (
-          <ReviewCard key={review.id} {...review} />
+          <ReviewCard userEmail={user?.email || null} key={review.id} {...review} onDelete={handleReviewDelete}/>
         ))
       )}
     </div>

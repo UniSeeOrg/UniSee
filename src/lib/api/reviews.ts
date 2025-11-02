@@ -37,3 +37,17 @@ export async function getReviews(
   const res = await fetch(`/api/reviews/get?${params.toString()}`);
   return await res.json();
 }
+
+//Calls /api/reviews/delete from app/api
+export async function deleteReview(reviewId: number)
+{
+  const res = await fetch("/api/reviews/delete", {
+    method: "DELETE",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({reviewId}),
+  });
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({ error: 'Failed to delete review' }));
+    throw new Error(errorData.error || `HTTP error! status: ${res.status}`);
+  }
+}

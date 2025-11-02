@@ -1,4 +1,5 @@
 import { fetchSchoolInfo, fetchSchoolIcon } from "./fetch"; // eslint-disable-line @typescript-eslint/no-unused-vars
+
 import AddReviewSection from "@/components/school/AddReviewSection";
 import ReviewsDisplay from "@/components/school/ReviewsDisplay";
 import Image from "next/image";
@@ -43,6 +44,7 @@ export default async function SchoolPage({ params }: { params: Promise<{ school:
 
   console.log(acceptanceRate)
   console.log(graduationRate)
+
 
   //for program info
 //  for(let i: number = 0; i < latest.programs.cip_4_digit.length; i++)
