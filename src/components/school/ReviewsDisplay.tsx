@@ -22,9 +22,7 @@ interface Review {
   tags?: string[];
   major?: string;
 }
-interface UserProfile {
-  is_verified?: boolean;
-}
+
 export default function ReviewsDisplay({ schoolId }: { schoolId: string }) {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [filteredReviews, setFilteredReviews] = useState<Review[]>([]);
@@ -35,9 +33,8 @@ export default function ReviewsDisplay({ schoolId }: { schoolId: string }) {
 
 
 
-  {/* Using same getUser setup from AddReviewSection, TODO: optimize this a little*/}
+  {/* Get current user for review deletion */}
   const [user, setUser] = useState<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
-  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   useEffect(() => {
     const getUser = async () => {
       try {
@@ -47,34 +44,7 @@ export default function ReviewsDisplay({ schoolId }: { schoolId: string }) {
           return;
         }
         setUser(user);
-      
-        // Fetch user profile to check verification status
-        try {
-          console.log('AddReviewSection: Attempting to fetch profile for:', user.email);
-          console.log('AddReviewSection: User ID:', user.id);
-          
-          // Try using auth_id instead
-          const profileResponse = await supabaseClient
-            .from('User')
-            .select('is_verified, email, auth_id')
-            .eq('auth_id', user.id)
-            .maybeSingle(); // Use maybeSingle instead of single to avoid error on no rows
-          
-          //console.log('AddReviewSection: Profile fetch response:', profileResponse);
-          if (profileResponse.data) {
-            //console.log('AddReviewSection: Setting userProfile to:', profileResponse.data);
-            setUserProfile(profileResponse.data);
-
-          } else if (profileResponse.error) {
-            //console.error('AddReviewSection: Fetch error:', profileResponse.error);
-          } else {
-            //console.log('AddReviewSection: No profile found for user:', user.id);
-          }
-        } catch (err) {
-          console.error('Error fetching user profile:', err);
-        }
       } catch (err) {
-        // Silently handle auth errors (user not logged in or expired session)
         console.log('Auth check failed (user may not be logged in):', err);
         setUser(null);
       }

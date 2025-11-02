@@ -20,9 +20,6 @@ interface ReviewCardProps {
   userEmail: string | null;
   onDelete: (deletedId: string) => void;
 }
-interface UserProfile {
-  is_verified?: boolean;
-}
 
 export default function ReviewCard({
   id,
