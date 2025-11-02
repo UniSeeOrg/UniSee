@@ -23,6 +23,31 @@ export default async function SchoolPage({ params }: { params: Promise<{ school:
   const numUndergrads: number = latest.student.size;
   const numGrads :number = latest.student.grad_students;
 
+  const avgNetCost:number = latest.cost.avg_net_price.overall;
+  const totalCost:number = latest.cost.attendance.academic_year;
+  const avgFinAid:number =  totalCost - avgNetCost;
+  
+  const acceptanceRate: string = `${(latest.admissions.admission_rate.overall * 100).toFixed(2)}%`;
+  const graduationRate: string = `${(latest.completion.consumer_rate * 100).toFixed(2)}%`;
+
+  const schoolType: string = latest.school.peps_ownership;
+  const avgSatScore: number = latest.admissions.sat_scores.average.overall;
+  const avgActScore: number = latest.admissions.act_scores.midpoint.cumulative;
+
+  console.log(latest)
+  console.log(latest.admissions)
+  console.log(latest.academics)
+
+
+  console.log(acceptanceRate)
+  console.log(graduationRate)
+
+  //for program info
+//  for(let i: number = 0; i < latest.programs.cip_4_digit.length; i++)
+//  {
+//    console.log(latest.programs.cip_4_digit[i])
+//  }
+
 
   //TODO: fetch school uuid from db (later integration)
   const schoolId = "31862546-fe57-4e3e-801c-4a16f9acfabb"
@@ -62,6 +87,9 @@ export default async function SchoolPage({ params }: { params: Promise<{ school:
                 </span>
                 <span className="bg-purple-100 text-purple-800 px-3 py-1 rounded-full">
                   {(numUndergrads + numGrads).toLocaleString()} Total Students
+                </span>
+                <span className="bg-amber-100 text-amber-800 px-3 py-1 rounded-full">
+                  {schoolType} University
                 </span>
               </div>
             </div>
@@ -118,6 +146,36 @@ export default async function SchoolPage({ params }: { params: Promise<{ school:
                 <div>
                   <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">Graduate Enrollment</h3>
                   <p className="mt-1 text-lg text-gray-900">{numGrads.toLocaleString()} students</p>
+                </div>
+
+                <div>
+                  <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">Acceptance Rate</h3>
+                  <p className="mt-1 text-lg text-gray-900">{acceptanceRate}</p>
+                </div>
+                
+                <div>
+                  <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">Graduation Rate</h3>
+                  <p className="mt-1 text-lg text-gray-900">{graduationRate}</p>
+                </div>
+
+                <div>
+                  <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">Average Cost</h3>
+                  <p className="mt-1 text-lg text-gray-900">${avgNetCost.toLocaleString()}</p>
+                </div>
+                
+                <div>
+                  <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">Average Aid</h3>
+                  <p className="mt-1 text-lg text-gray-900">${avgFinAid.toLocaleString()}</p>
+                </div>
+
+                <div>
+                  <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">Average SAT Score</h3>
+                  <p className="mt-1 text-lg text-gray-900">{avgSatScore}</p>
+                </div>
+                
+                <div>
+                  <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">Average ACT Score</h3>
+                  <p className="mt-1 text-lg text-gray-900">{avgActScore}</p>
                 </div>
               </div>
             </div>
