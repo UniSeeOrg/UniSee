@@ -1,10 +1,18 @@
-
+import { getOrCreateSchool, getSchoolFromExternalID } from "@/lib/api/schools";
 export async function fetchSchoolInfo(schoolName :string)
 {
   const apiResponse = await fetch(`https://api.data.gov/ed/collegescorecard/v1/schools?api_key=${getApiKey()}&school.name=${schoolName} `);
   const data = await apiResponse.json();
-  return data;
+  //schoolId 
+  const id = data.results?.[0].id;
+  const name = data.results?.[0].school.name;
+  const url = data.results?.[0].school.school_url;
+
+  const uuid = await getOrCreateSchool(id,name,url)
+
+  return {data: data, uuid:uuid};
 }
+
 export async function fetchSchoolIcon(url: URL)
 {
   const logoResponse = await fetch(url)

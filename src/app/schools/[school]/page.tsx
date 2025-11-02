@@ -15,8 +15,10 @@ export default async function SchoolPage({ params }: { params: Promise<{ school:
     return (<p>not found</p>)
   }
 
-
-  const result = await schoolInfo.results?.[0]
+  const result = await schoolInfo.data.results?.[0];
+  const schoolId = await schoolInfo.uuid;
+  console.log(schoolId);
+  //console.log(result.id)
   const school: { name: string; city: string; state: string; school_url: URL } = result.school;
   const latest = result.latest;
   const {name,city,state,school_url} : {name: string, city: string, state:string,school_url:URL}= school;
@@ -50,7 +52,6 @@ export default async function SchoolPage({ params }: { params: Promise<{ school:
 
 
   //TODO: fetch school uuid from db (later integration)
-  const schoolId = "31862546-fe57-4e3e-801c-4a16f9acfabb"
   //Log school info if shit gets messy
   console.log(latest.student.size)
 
