@@ -10,7 +10,6 @@ export default function SchoolsPage() {
         </div>
         <SearchBar/>
       </div>
-      {/* School listing will go here */}
     </div>
   );
 }
