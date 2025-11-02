@@ -79,6 +79,20 @@ export default function AccountPage() {
           alert(error.message);
         } else if (data.user) {
           setUser(data.user);
+          // Fetch user profile immediately after login
+          try {
+            const profileResponse = await supabaseClient
+              .from('User')
+              .select('*')
+              .eq('auth_id', data.user.id)
+              .single();
+            
+            if (profileResponse.data) {
+              setUserProfile(profileResponse.data);
+            }
+          } catch (err) {
+            console.error('Error fetching user profile:', err);
+          }
           alert(`Welcome back, ${data.user.email}!`);
         }
       } else {
