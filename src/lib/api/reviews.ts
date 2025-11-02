@@ -38,6 +38,22 @@ export async function getReviews(
   return await res.json();
 }
 
+export async function updateReview(reviewId: string, reviewData: Partial<Review>) {
+  console.log("Updating review:", reviewId, reviewData);
+  const res = await fetch("/api/reviews/update", {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ id: reviewId, ...reviewData }),
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({ error: 'Failed to update review' }));
+    throw new Error(errorData.error || `HTTP error! status: ${res.status}`);
+  }
+
+  return await res.json();
+}
+
 //Calls /api/reviews/delete from app/api
 export async function deleteReview(reviewId: number)
 {

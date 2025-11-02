@@ -18,8 +18,13 @@ export default function SearchBar() {
 
     const timer = setTimeout(async () => {
       try {
+        const apiKey = process.env.NEXT_PUBLIC_COLLEGE_SCORECARD_API_KEY;
+        if (!apiKey) {
+          console.error("COLLEGE_SCORECARD_API_KEY is not configured");
+          return;
+        }
         const res = await fetch(
-          `https://api.data.gov/ed/collegescorecard/v1/schools?api_key=bb29Q304BgkotuPdvwfeF23deO8F93psi0F2sSC4&school.name=${search}&sort=latest.student.size:desc`
+          `https://api.data.gov/ed/collegescorecard/v1/schools?api_key=${apiKey}&school.name=${search}&sort=latest.student.size:desc`
         );
         const data = await res.json();
 

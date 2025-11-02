@@ -103,6 +103,9 @@ DIRECT_URL=your_direct_url_here
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url_here
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key_here
 SUPABASE_SERVICE_KEY=your_service_key_here
+
+# College Scorecard API key
+NEXT_PUBLIC_COLLEGE_SCORECARD_API_KEY=your_college_scorecard_api_key_here
 EOF
 
 # 4) Run the dev server

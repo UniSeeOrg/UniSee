@@ -22,7 +22,9 @@ export async function fetchSchoolIcon(url: URL)
 
 function getApiKey() : string
 {
-  //need to store this in an .env somewhere and export it 
-  const apiKey = "bb29Q304BgkotuPdvwfeF23deO8F93psi0F2sSC4"
+  const apiKey = process.env.NEXT_PUBLIC_COLLEGE_SCORECARD_API_KEY;
+  if (!apiKey) {
+    throw new Error("COLLEGE_SCORECARD_API_KEY is not configured");
+  }
   return apiKey;
 }

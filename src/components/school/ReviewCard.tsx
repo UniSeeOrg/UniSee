@@ -1,4 +1,7 @@
+"use client"
+import { useState } from "react";
 import { deleteReview } from "@/lib/api/reviews";
+import EditReviewForm from "./EditReviewForm";
 
   {/* adding some new values to reviewcardprops*/}
 interface ReviewCardProps {
@@ -37,6 +40,8 @@ export default function ReviewCard({
   userEmail,
   onDelete,
 }: ReviewCardProps) {
+  const [isEditing, setIsEditing] = useState(false);
+
   const renderStars = (value?: number) => {
     if (!value) return null;
     return "⭐".repeat(value);
@@ -56,19 +61,46 @@ export default function ReviewCard({
   };
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg p-6 mb-4">
-      <div className="mb-3">
+    <>
+      {isEditing ? (
+        <EditReviewForm
+          closeForm={() => setIsEditing(false)}
+          reviewId={id}
+          initialData={{
+            title,
+            content,
+            rating,
+            academics,
+            social,
+            food,
+            housing,
+            career,
+            tags,
+            major,
+          }}
+        />
+      ) : null}
+      <div className="bg-white border border-gray-200 rounded-lg p-6 mb-4">
+        <div className="mb-3">
 
-        {/* Delete functionality using onDelete callback from parent*/}
-        {userEmail && author?.email === userEmail && (
-          <button
-            className="text-red-600 text-sm hover:underline"
-            onClick={handleDelete}
-          >
-            Delete
-          </button>
-        )}
-        <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
+          {/* Edit and Delete functionality using onDelete callback from parent*/}
+          {userEmail && author?.email === userEmail && (
+            <div className="flex gap-2 mb-2">
+              <button
+                className="text-blue-600 text-sm hover:underline"
+                onClick={() => setIsEditing(true)}
+              >
+                Edit
+              </button>
+              <button
+                className="text-red-600 text-sm hover:underline"
+                onClick={handleDelete}
+              >
+                Delete
+              </button>
+            </div>
+          )}
+          <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
         {author && (
           <p className="text-sm text-gray-500">{author.name || author.email}</p>
         )}
@@ -114,5 +146,6 @@ export default function ReviewCard({
         </div>
       )}
     </div>
+    </>
   );
 }
