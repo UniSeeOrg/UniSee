@@ -22,8 +22,8 @@ export default async function SchoolPage({ params }: { params: Promise<{ school:
   const school: { name: string; city: string; state: string; school_url: URL } = result.school;
   const latest = result.latest;
   const {name,city,state,school_url} : {name: string, city: string, state:string,school_url:URL}= school;
-  const numUndergrads: number = latest.student.size;
-  const numGrads :number = latest.student.grad_students;
+  const numUndergrads: string = latest.student?.size;
+  const numGrads : string = latest.student?.grad_students;
 
   const avgNetCost:number = latest.cost.avg_net_price.overall;
   const totalCost:number = latest.cost.attendance.academic_year;
@@ -81,13 +81,13 @@ export default async function SchoolPage({ params }: { params: Promise<{ school:
               {/* Quick Stats */}
               <div className="flex flex-wrap gap-4 text-sm">
                 <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full">
-                  {numUndergrads.toLocaleString()} Undergraduates
+                  {numUndergrads?.toLocaleString()} Undergraduates
                 </span>
                 <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full">
-                  {numGrads.toLocaleString()} Graduates
+                  {numGrads?.toLocaleString()} Graduates
                 </span>
                 <span className="bg-purple-100 text-purple-800 px-3 py-1 rounded-full">
-                  {(numUndergrads + numGrads).toLocaleString()} Total Students
+                  {(numUndergrads + numGrads)?.toLocaleString()} Total Students
                 </span>
                 <span className="bg-amber-100 text-amber-800 px-3 py-1 rounded-full">
                   {schoolType} University
@@ -141,12 +141,12 @@ export default async function SchoolPage({ params }: { params: Promise<{ school:
                 
                 <div>
                   <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">Undergraduate Enrollment</h3>
-                  <p className="mt-1 text-lg text-gray-900">{numUndergrads.toLocaleString()} students</p>
+                  <p className="mt-1 text-lg text-gray-900">{numUndergrads?.toLocaleString()} students</p>
                 </div>
                 
                 <div>
                   <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">Graduate Enrollment</h3>
-                  <p className="mt-1 text-lg text-gray-900">{numGrads.toLocaleString()} students</p>
+                  <p className="mt-1 text-lg text-gray-900">{numGrads?.toLocaleString()} students</p>
                 </div>
 
                 <div>
