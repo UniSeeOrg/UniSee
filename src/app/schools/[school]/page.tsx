@@ -69,7 +69,7 @@ export default async function SchoolPage({ params }: { params: Promise<{ school:
             {/* Visit Website Button */}
             <div className="flex-shrink-0">
               <a 
-                href={school_url.toString()} 
+                href={`https://${school_url}`} 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
@@ -101,7 +101,7 @@ export default async function SchoolPage({ params }: { params: Promise<{ school:
                 <div>
                   <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">Website</h3>
                   <a 
-                    href={school_url.toString()} 
+                    href={`https://${school_url}`} 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="mt-1 text-lg text-blue-600 hover:text-blue-800 hover:underline"
