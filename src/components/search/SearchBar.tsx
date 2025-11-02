@@ -52,7 +52,7 @@ export default function SearchBar() {
       {results.length > 0 && (
         <div className="absolute z-10 w-full mt-1 bg-white rounded-md shadow-lg max-h-60 overflow-auto">
           {results.map((school) => (
-            <div key={school.id} className="px-4 py-2 hover:bg-gray-100" onClick={() => router.push(`/schools/${school.id}`)}>
+            <div key={school.id} className="px-4 py-2 hover:bg-gray-100" onClick={() => router.push(`/schools/${school.school.alias || school.school.name}`)}>
               <div className="flex flex-row">
                 <div className="w-12 h-12 flex items-center justify-center bg-gray-100 flex-shrink-0">
                   <img
