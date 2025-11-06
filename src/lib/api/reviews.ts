@@ -1,11 +1,27 @@
 "use client" 
 import {Review} from "@/lib/types/reviews";
+import { getSessionToken } from "@/lib/utils/supabaseAuth";
+
+/**
+ * Get the current session token for authenticated requests
+ * Uses the safe utility function that handles errors gracefully
+ */
+async function getAuthToken(): Promise<string | null> {
+  return getSessionToken();
+}
 
 export async function createReview(review: Review) {
   console.log(review);
+  const token = await getAuthToken();
+  
+  const headers: HeadersInit = { "Content-Type": "application/json" };
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+  
   const res = await fetch("/api/reviews/create", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers,
     body: JSON.stringify(review),
   });
   
@@ -35,14 +51,41 @@ export async function getReviews(
   }
   
   const res = await fetch(`/api/reviews/get?${params.toString()}`);
+  
+  // Check if response is OK and is JSON
+  if (!res.ok) {
+    // Try to parse error as JSON, fallback to text
+    const contentType = res.headers.get("content-type");
+    if (contentType && contentType.includes("application/json")) {
+      const errorData = await res.json().catch(() => ({ error: `HTTP error! status: ${res.status}` }));
+      throw new Error(errorData.error || `HTTP error! status: ${res.status}`);
+    } else {
+      // If it's HTML (error page), throw a generic error
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+  }
+  
+  // Check content type before parsing
+  const contentType = res.headers.get("content-type");
+  if (!contentType || !contentType.includes("application/json")) {
+    throw new Error("Expected JSON response but got " + contentType);
+  }
+  
   return await res.json();
 }
 
 export async function updateReview(reviewId: string, reviewData: Partial<Review>) {
   console.log("Updating review:", reviewId, reviewData);
+  const token = await getAuthToken();
+  
+  const headers: HeadersInit = { "Content-Type": "application/json" };
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+  
   const res = await fetch("/api/reviews/update", {
     method: "PUT",
-    headers: { "Content-Type": "application/json" },
+    headers,
     body: JSON.stringify({ id: reviewId, ...reviewData }),
   });
 
@@ -57,9 +100,16 @@ export async function updateReview(reviewId: string, reviewData: Partial<Review>
 //Calls /api/reviews/delete from app/api
 export async function deleteReview(reviewId: number)
 {
+  const token = await getAuthToken();
+  
+  const headers: HeadersInit = { "Content-Type": "application/json" };
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+  
   const res = await fetch("/api/reviews/delete", {
     method: "DELETE",
-    headers: { "Content-Type": "application/json" },
+    headers,
     body: JSON.stringify({reviewId}),
   });
   if (!res.ok) {

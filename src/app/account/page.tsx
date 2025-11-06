@@ -1,6 +1,7 @@
 "use client"
 import { useEffect, useState } from "react";
 import { supabaseClient } from "@/lib/supabase/client";
+import { getCurrentUser } from "@/lib/utils/supabaseAuth";
 import { useRouter } from "next/navigation";
 
 interface UserProfile {
@@ -23,33 +24,36 @@ export default function AccountPage() {
   useEffect(() => {
     const getUser = async () => {
       try {
-        const { data: { user }, error } = await supabaseClient.auth.getUser();
+        // Use the safe utility function that handles errors gracefully
+        const currentUser = await getCurrentUser();
         
-        if (error || !user) {
+        if (!currentUser) {
           setUser(null);
           setLoading(false);
           return;
         }
         
-        setUser(user);
+        setUser(currentUser);
         
         // Fetch user profile from database if logged in
-        try {
-          const profileResponse = await supabaseClient
-            .from('User')
-            .select('*')
-            .eq('auth_id', user.id)
-            .single();
-          
-          if (profileResponse.data) {
-            setUserProfile(profileResponse.data);
+        if (currentUser) {
+          try {
+            const profileResponse = await supabaseClient
+              .from('User')
+              .select('*')
+              .eq('auth_id', currentUser.id)
+              .single();
+            
+            if (profileResponse.data) {
+              setUserProfile(profileResponse.data);
+            }
+          } catch (err) {
+            console.error('Error fetching user profile:', err);
           }
-        } catch (err) {
-          console.error('Error fetching user profile:', err);
         }
       } catch (err) {
-        // Silently handle auth errors (user not logged in or expired session)
-        console.log('Auth check failed (user may not be logged in):', err);
+        // Silently handle any errors
+        console.log('Error in getUser:', err);
         setUser(null);
       } finally {
         setLoading(false);

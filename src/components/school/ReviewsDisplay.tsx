@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { supabaseClient } from "@/lib/supabase/client";
+import { getCurrentUser } from "@/lib/utils/supabaseAuth";
 
 import { getReviews } from "@/lib/api/reviews";
 import ReviewCard from "./ReviewCard";
@@ -37,17 +37,9 @@ export default function ReviewsDisplay({ schoolId }: { schoolId: string }) {
   const [user, setUser] = useState<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
   useEffect(() => {
     const getUser = async () => {
-      try {
-        const { data: { user }, error } = await supabaseClient.auth.getUser();
-        if (error || !user) {
-          setUser(null);
-          return;
-        }
-        setUser(user);
-      } catch (err) {
-        console.log('Auth check failed (user may not be logged in):', err);
-        setUser(null);
-      }
+      // Use the safe utility function that handles errors gracefully
+      const currentUser = await getCurrentUser();
+      setUser(currentUser);
     };
     getUser();
   }, []);
@@ -59,11 +51,16 @@ export default function ReviewsDisplay({ schoolId }: { schoolId: string }) {
         // Ensure data is an array
         if (Array.isArray(data)) {
           setReviews(data);
+        } else if (data && typeof data === 'object' && 'error' in data) {
+          // If the response has an error field, log it but don't crash
+          console.error("Error in reviews response:", data.error);
+          setReviews([]);
         } else {
           console.error("Expected array but got:", data);
           setReviews([]);
         }
       } catch (error) {
+        // Handle errors gracefully - don't show error to user, just log it
         console.error("Error fetching reviews:", error);
         setReviews([]);
       } finally {
@@ -71,7 +68,11 @@ export default function ReviewsDisplay({ schoolId }: { schoolId: string }) {
       }
     };
 
-    fetchReviews();
+    if (schoolId) {
+      fetchReviews();
+    } else {
+      setLoading(false);
+    }
   }, [schoolId, sortBy, minRating]);
 
   // Client-side tag filtering

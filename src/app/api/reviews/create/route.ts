@@ -1,17 +1,72 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/prisma";
-import { Review } from "@/lib/types/reviews";
+import { requireAuth } from "@/lib/utils/auth";
+import { validateReview } from "@/lib/utils/validation";
+import { rateLimitMiddleware } from "@/lib/utils/rateLimit";
 
 export async function POST(req: NextRequest) {
   try 
   {
-    const review: Review = await req.json();
+    // Require authentication
+    const user = await requireAuth(req);
+    
+    // Check rate limit
+    const rateLimitError = rateLimitMiddleware(req, user.id);
+    if (rateLimitError) {
+      return NextResponse.json(
+        { 
+          error: rateLimitError.error,
+          resetTime: rateLimitError.resetTime,
+        },
+        { 
+          status: rateLimitError.status,
+          headers: rateLimitError.resetTime ? {
+            "X-RateLimit-Reset": new Date(rateLimitError.resetTime).toISOString(),
+          } : undefined,
+        }
+      );
+    }
+    
+    const rawData = await req.json();
+    
+    // Validate and sanitize input
+    let reviewData;
+    try {
+      reviewData = validateReview(rawData);
+    } catch (validationError) {
+      // The validateReview function already formats the error message
+      const errorMessage = validationError instanceof Error 
+        ? validationError.message 
+        : "Invalid input data. Please check all required fields and ensure ratings are between 1-5 if provided.";
+      
+      return NextResponse.json(
+        { error: errorMessage },
+        { status: 400 }
+      );
+    }
 
-    const { id: _id, ...reviewData } = review; // eslint-disable-line @typescript-eslint/no-unused-vars
+    // Remove id if present (shouldn't be in create requests)
+    const { id: _id, ...reviewDataWithoutId } = reviewData as typeof reviewData & { id?: unknown }; // eslint-disable-line @typescript-eslint/no-unused-vars
     
-    console.log("Creating review with data:", reviewData);
+    // Ensure the authorId matches the authenticated user
+    // Get the user's auth_id from the database
+    const dbUser = await prisma.user.findUnique({
+      where: { auth_id: user.id },
+    });
     
-    const newReview = await prisma.review.create({ data: reviewData });
+    if (!dbUser) {
+      return NextResponse.json(
+        { error: "User profile not found. Please complete registration." },
+        { status: 404 }
+      );
+    }
+    
+    // Override authorId with the authenticated user's ID
+    reviewDataWithoutId.authorId = dbUser.auth_id || user.id;
+    
+    console.log("Creating review with data:", reviewDataWithoutId);
+    
+    const newReview = await prisma.review.create({ data: reviewDataWithoutId });
     
     console.log("Review created successfully:", newReview);
     
@@ -26,6 +81,15 @@ export async function POST(req: NextRequest) {
   catch (error) 
   {
     console.error("Error creating review:", error);
+    
+    // Handle authentication errors
+    if (error instanceof Error && error.message.includes("Unauthorized")) {
+      return NextResponse.json(
+        { error: "Authentication required. Please log in to create a review." },
+        { status: 401 }
+      );
+    }
+    
     const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
     return NextResponse.json({ error: errorMessage }, { status: 500 });
   }

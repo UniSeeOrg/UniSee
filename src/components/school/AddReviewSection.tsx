@@ -1,6 +1,7 @@
 "use client"
 import { useEffect, useState } from "react";
 import { supabaseClient } from "@/lib/supabase/client";
+import { getCurrentUser } from "@/lib/utils/supabaseAuth";
 import ReviewButton from "./ReviewButton";
 import ReviewForm from "./ReviewForm";
 
@@ -15,24 +16,24 @@ export default function AddReviewSection({schoolId}: { schoolId: string}) {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   useEffect(() => {
     const getUser = async () => {
-      try {
-        const { data: { user }, error } = await supabaseClient.auth.getUser();
-        if (error || !user) {
-          setUser(null);
-          return;
-        }
-        setUser(user);
+      // Use the safe utility function that handles errors gracefully
+      const currentUser = await getCurrentUser();
+      if (!currentUser) {
+        setUser(null);
+        return;
+      }
+      setUser(currentUser);
       
         // Fetch user profile to check verification status
         try {
-          console.log('AddReviewSection: Attempting to fetch profile for:', user.email);
-          console.log('AddReviewSection: User ID:', user.id);
+          console.log('AddReviewSection: Attempting to fetch profile for:', currentUser.email);
+          console.log('AddReviewSection: User ID:', currentUser.id);
           
           // Try using auth_id instead
           const profileResponse = await supabaseClient
             .from('User')
             .select('is_verified, email, auth_id')
-            .eq('auth_id', user.id)
+            .eq('auth_id', currentUser.id)
             .maybeSingle(); // Use maybeSingle instead of single to avoid error on no rows
           
           console.log('AddReviewSection: Profile fetch response:', profileResponse);
@@ -42,16 +43,11 @@ export default function AddReviewSection({schoolId}: { schoolId: string}) {
           } else if (profileResponse.error) {
             console.error('AddReviewSection: Fetch error:', profileResponse.error);
           } else {
-            console.log('AddReviewSection: No profile found for user:', user.id);
+            console.log('AddReviewSection: No profile found for user:', currentUser.id);
           }
         } catch (err) {
           console.error('Error fetching user profile:', err);
         }
-      } catch (err) {
-        // Silently handle auth errors (user not logged in or expired session)
-        console.log('Auth check failed (user may not be logged in):', err);
-        setUser(null);
-      }
     };
     getUser();
   }, []);
