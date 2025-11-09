@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { supabaseClient } from "@/lib/supabase/client";
 import { getCurrentUser } from "@/lib/utils/supabaseAuth";
+import { useToast } from "@/components/ui/ToastContainer";
 import { useRouter } from "next/navigation";
 
 interface UserProfile {
@@ -20,6 +21,7 @@ export default function AccountPage() {
   const [password, setPassword] = useState("");
   const [authLoading, setAuthLoading] = useState(false);
   const router = useRouter();
+  const { showSuccess, showError, showInfo } = useToast();
 
   useEffect(() => {
     const getUser = async () => {
@@ -80,7 +82,7 @@ export default function AccountPage() {
           password,
         });
         if (error) {
-          alert(error.message);
+          showError(error.message);
         } else if (data.user) {
           setUser(data.user);
           // Fetch user profile immediately after login
@@ -97,7 +99,7 @@ export default function AccountPage() {
           } catch (err) {
             console.error('Error fetching user profile:', err);
           }
-          alert(`Welcome back, ${data.user.email}!`);
+          showSuccess(`Welcome back, ${data.user.email}!`);
         }
       } else {
         // Sign up
@@ -106,7 +108,7 @@ export default function AccountPage() {
           password,
         });
         if (authError) {
-          alert(authError.message);
+          showError(authError.message);
         } else if (authData.user) {
           // Create user row in database
           try {
@@ -115,16 +117,16 @@ export default function AccountPage() {
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ auth_id: authData.user.id, email }),
             });
-            alert("Sign-up complete! Please check your email to confirm your account.");
+            showSuccess("Sign-up complete! Please check your email to confirm your account.");
           } catch (err) {
             console.error("Failed to create user row:", err);
-            alert("Sign-up succeeded, but failed to create user profile.");
+            showError("Sign-up succeeded, but failed to create user profile.");
           }
         }
       }
     } catch (err) {
       console.error("Auth error:", err);
-      alert("An error occurred. Please try again.");
+      showError("An error occurred. Please try again.");
     } finally {
       setAuthLoading(false);
     }

@@ -101,8 +101,28 @@ export default function ReviewsDisplay({ schoolId }: { schoolId: string }) {
 
   if (reviews.length === 0) {
     return (
-      <div className="text-center py-8 text-gray-500">
-        No reviews yet. Be the first to leave a review!
+      <div className="text-center py-12 md:py-16">
+        <div className="max-w-md mx-auto">
+          <svg
+            className="mx-auto h-16 w-16 text-gray-400 mb-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={1.5}
+              d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
+            />
+          </svg>
+          <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-2">
+            No reviews yet
+          </h3>
+          <p className="text-sm md:text-base text-gray-500 mb-4">
+            Be the first to share your experience with this school!
+          </p>
+        </div>
       </div>
     );
   }
@@ -118,17 +138,17 @@ export default function ReviewsDisplay({ schoolId }: { schoolId: string }) {
   return (
     <div className="mt-8">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
-        <h2 className="text-2xl font-semibold text-gray-900 mb-4 md:mb-0">
+        <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 md:mb-0">
           Reviews ({filteredReviews.length})
         </h2>
         
         {/* Sort Controls */}
         <div className="flex items-center gap-4">
-          <label className="text-sm font-medium text-gray-700">Sort by:</label>
+          <label className="text-base font-medium text-gray-700">Sort by:</label>
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
-            className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="px-4 py-2.5 border border-gray-300 rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
           >
             <option value="newest">Newest First</option>
             <option value="oldest">Oldest First</option>
@@ -139,17 +159,17 @@ export default function ReviewsDisplay({ schoolId }: { schoolId: string }) {
       </div>
 
       {/* Filter Controls */}
-      <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-        <div className="flex flex-col gap-4">
+      <div className="mb-8 p-5 md:p-6 bg-gray-50 rounded-xl border border-gray-200">
+        <div className="flex flex-col gap-5">
           {/* Rating Filter */}
           <div>
-            <label className="text-sm font-medium text-gray-700 mb-2 block">
+            <label className="text-base font-semibold text-gray-800 mb-3 block">
               Minimum Rating:
             </label>
             <select
               value={minRating || ""}
               onChange={(e) => setMinRating(e.target.value ? parseInt(e.target.value) : undefined)}
-              className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="px-4 py-2.5 border border-gray-300 rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
             >
               <option value="">All Ratings</option>
               <option value="5">5 stars</option>
@@ -162,18 +182,18 @@ export default function ReviewsDisplay({ schoolId }: { schoolId: string }) {
 
           {/* Tag Filters */}
           <div>
-            <label className="text-sm font-medium text-gray-700 mb-2 block">
+            <label className="text-base font-semibold text-gray-800 mb-3 block">
               Filter by Tags:
             </label>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-3">
               {availableTags.map((tag) => (
                 <button
                   key={tag}
                   onClick={() => toggleTag(tag)}
-                  className={`px-3 py-1 rounded-full text-sm transition-colors ${
+                  className={`px-4 py-2 rounded-full text-base font-medium transition-colors ${
                     selectedTags.includes(tag)
-                      ? "bg-blue-600 text-white"
-                      : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-100"
+                      ? "bg-blue-600 text-white shadow-sm"
+                      : "bg-white border-2 border-gray-300 text-gray-700 hover:bg-gray-100 hover:border-gray-400"
                   }`}
                 >
                   {tag}
@@ -183,7 +203,7 @@ export default function ReviewsDisplay({ schoolId }: { schoolId: string }) {
             {selectedTags.length > 0 && (
               <button
                 onClick={() => setSelectedTags([])}
-                className="mt-2 text-sm text-blue-600 hover:text-blue-800"
+                className="mt-3 text-base text-blue-600 hover:text-blue-800 font-medium"
               >
                 Clear filters
               </button>
@@ -196,8 +216,37 @@ export default function ReviewsDisplay({ schoolId }: { schoolId: string }) {
 
       {/* ReviewCard has some new props, onDelete callback method and user if logged in*/}
       {filteredReviews.length === 0 ? (
-        <div className="text-center py-8 text-gray-500">
-          No reviews match your filters. Try adjusting your search criteria.
+        <div className="text-center py-12 md:py-16">
+          <div className="max-w-md mx-auto">
+            <svg
+              className="mx-auto h-16 w-16 text-gray-400 mb-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
+            </svg>
+            <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-2">
+              No reviews match your filters
+            </h3>
+            <p className="text-sm md:text-base text-gray-500 mb-4">
+              Try adjusting your search criteria or clearing filters.
+            </p>
+            <button
+              onClick={() => {
+                setSelectedTags([]);
+                setMinRating(undefined);
+              }}
+              className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+            >
+              Clear all filters
+            </button>
+          </div>
         </div>
       ) : (
         filteredReviews.map((review) => (

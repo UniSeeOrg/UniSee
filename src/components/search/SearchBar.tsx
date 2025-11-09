@@ -46,10 +46,10 @@ export default function SearchBar() {
   }, [search]);
 
   return (
-    <div className="relative">
-      <div className="bg-white rounded-xl py-3 px-6 shadow-lg">
+    <div className="relative w-full">
+      <div className="bg-white rounded-xl py-3 px-4 md:px-6 shadow-lg w-full">
         <input
-          className="w-3/4 bg-transparent outline-none text-xl"
+          className="w-full bg-transparent outline-none text-base md:text-xl"
           type="text"
           placeholder="Start typing..."
           value={search}
@@ -58,9 +58,9 @@ export default function SearchBar() {
       </div>
 
       {results.length > 0 && (
-        <div className="absolute z-10 w-full mt-1 bg-white rounded-md shadow-lg max-h-60 overflow-auto">
+        <div className="absolute z-10 w-full mt-2 bg-white rounded-md shadow-lg max-h-60 overflow-auto border border-gray-200">
           {results.map((school) => (
-            <div key={school.id} className="px-4 py-2 hover:bg-gray-100" onClick={() => router.push(`/schools/${school.id}`)}>
+            <div key={school.id} className="px-4 py-2 hover:bg-gray-100 cursor-pointer transition-colors" onClick={() => router.push(`/schools/${school.id}`)}>
               <div className="flex flex-row">
                 <div className="w-12 h-12 flex items-center justify-center bg-gray-100 flex-shrink-0">
                   <Image
@@ -71,9 +71,9 @@ export default function SearchBar() {
                     className="object-contain rounded-lg shadow-md"
                   />
                 </div>
-                <div className="flex flex-col px-4">
-                  <p className="font-bold text-xl">{school.school.name}</p>
-                  <p className="italic font-semibold text-sm">{school.school.city}, {school.school.state}</p>
+                <div className="flex flex-col px-3 md:px-4 min-w-0 flex-1">
+                  <p className="font-bold text-base md:text-xl truncate">{school.school.name}</p>
+                  <p className="italic font-semibold text-xs md:text-sm text-gray-600">{school.school.city}, {school.school.state}</p>
                 </div>
               </div>
             </div>

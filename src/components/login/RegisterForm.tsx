@@ -1,16 +1,27 @@
 "use client"
 import {useState} from "react";
 import { supabaseClient } from "@/lib/supabase/client";
+import { useToast } from "@/components/ui/ToastContainer";
+import { useRouter } from "next/navigation";
 
 export default function RegisterForm() {
   const [email, emailEnter] = useState<string>("");
   const [password, passwordEnter] = useState<string>(""); 
+  const { showSuccess, showError } = useToast();
+  const router = useRouter();
+
   async function submit(e: React.FormEvent<HTMLFormElement>)
   {
     e.preventDefault();
     const {data: authData, error: error} = await supabaseClient.auth.signUp({email, password});
-    if(error) alert(error.message);
-    if(!authData.user) return; 
+    if(error) {
+      showError(error.message);
+      return;
+    }
+    if(!authData.user) {
+      showError("Sign-up failed. Please try again.");
+      return;
+    }
 
     try 
     {
@@ -20,23 +31,56 @@ export default function RegisterForm() {
         body: JSON.stringify({ auth_id: authData.user.id, email }),
       });
       console.log("User row created");
-      alert("Sign-up complete!");
+      showSuccess("Sign-up complete! Please check your email to confirm your account.");
+      setTimeout(() => {
+        router.push("/account");
+      }, 2000);
     } 
     catch (err: unknown) 
     {
       console.error("Failed to insert user row:", err);
-      alert("Sign-up succeeded, but failed to create DB row.");
+      showError("Sign-up succeeded, but failed to create user profile.");
     }
-    console.log(email,password);
   }
 
   return (
-    <div className = "">
-        <form className ="flex flex-col items-center justify-center"onSubmit={submit}>
-        <input className= "bg-black/10 rounded-md m-2 w-full p-4" type="text" placeholder="enter your email" value={email} onChange={(e)=> emailEnter(e.target.value)}></input>
-        <input className= "bg-black/10 rounded-md m-2 w-full p-4" type="text" placeholder="enter your password" value={password} onChange={(e)=> passwordEnter(e.target.value)}></input>
-        <button className = "bg-blue-500 p-2 rounded-md w-1/2" type="submit">submit</button>
-        </form>
+    <div className="bg-white rounded-lg shadow-sm border p-6 md:p-8">
+      <form className="space-y-4" onSubmit={submit}>
+        <div>
+          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+            Email
+          </label>
+          <input
+            id="email"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            type="email"
+            placeholder="Enter your email"
+            value={email}
+            onChange={(e) => emailEnter(e.target.value)}
+            required
+          />
+        </div>
+        <div>
+          <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+            Password
+          </label>
+          <input
+            id="password"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            type="password"
+            placeholder="Enter your password"
+            value={password}
+            onChange={(e) => passwordEnter(e.target.value)}
+            required
+          />
+        </div>
+        <button
+          className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+          type="submit"
+        >
+          Register
+        </button>
+      </form>
     </div>
   );
 }
