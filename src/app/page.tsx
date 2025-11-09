@@ -12,10 +12,10 @@ export default function Home() {
               UniSee
             </h1>
             <p className="text-xl md:text-2xl text-gray-700 font-medium mb-3">
-              Unbiased, student-verified reviews of colleges
+            See It Like a Student.
             </p>
             <p className="text-lg md:text-xl text-gray-600">
-              For students, by students.
+            Unbiased reviews. Complete coverage.
             </p>
           </div>
 
