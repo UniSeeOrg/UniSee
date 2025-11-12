@@ -1,6 +1,7 @@
 import { fetchSchoolInfo, fetchSchoolIcon } from "../fetch";
 import SchoolHeader from "@/components/layout/SchoolHeader";
 import ProgramCard from "@/components/school/programs/ProgramCard";
+import ProgramDropdown from "@/components/school/programs/ProgramDropdown";
 interface ProgramInfo
 {
   name: string;
@@ -32,6 +33,7 @@ export default async function SchoolPrograms({ params }: { params: Promise<{ sch
   const schoolType: string = latest.school.peps_ownership;
 
   let bachelorPrograms: Array<ProgramInfo> = [];
+  let graduatePrograms: Array<ProgramInfo> = [];
   
 
   //for program info
@@ -42,28 +44,39 @@ export default async function SchoolPrograms({ params }: { params: Promise<{ sch
     
     //this might need to change if degree title info isnt uniform
     const bachelorString = "Bachelor's Degree"
+    
+    let name = current.title
+    let earnings = current.earnings.highest["1_yr"].overall_median_earnings
+    let program: ProgramInfo = {name: name, earnings: earnings}
 
     if(degreeType == bachelorString)
     {
-      let name = current.title
-      let earnings = current.earnings.highest["1_yr"].overall_median_earnings
-      let program: ProgramInfo = {name: name, earnings: earnings}
       bachelorPrograms.push(program)
+    }
+    else
+    {
+      graduatePrograms.push(program) 
     }
     //Sorting Array<ProgramInfo> with a lambda, sorting A-Z
     bachelorPrograms.sort((a, b) => {return a.name.localeCompare(b.name);});
+
+    graduatePrograms.sort((a, b) => {return a.name.localeCompare(b.name);});
     console.log(current)
 
   }
+  console.log(result)
+
+
   return(
     <div className="flex flex-col">
       <SchoolHeader name={name} city={city} state={state} school_url={school_url} numGrads={numGrads} numUndergrads={numUndergrads} schoolType={schoolType}/>
       <div className="pt-12 flex flex-col items-center justify-center">
-        <h1 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 mb-6">Bachelor Programs</h1>
-        <div className="flex flex-wrap gap-6 justify-center h-128 overflow-y-scroll overflow-x-hidden">
-          {bachelorPrograms.map((program, index) => (
-           <ProgramCard key={index} name={program.name} earnings={program.earnings} />
-          ))}
+        <div>
+          <ProgramDropdown programs={bachelorPrograms} title="Bachelor Programs"/>
+        </div>
+
+        <div>
+          <ProgramDropdown programs={graduatePrograms} title="Graduate Programs"/>
         </div>
       </div>
     </div>
