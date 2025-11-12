@@ -46,11 +46,6 @@ export default async function SchoolPage({ params }: { params: Promise<{ school:
   console.log(graduationRate)
 
 
-  //for program info
-//  for(let i: number = 0; i < latest.programs.cip_4_digit.length; i++)
-//  {
-//    console.log(latest.programs.cip_4_digit[i])
-//  }
 
 
   //TODO: fetch school uuid from db (later integration)
