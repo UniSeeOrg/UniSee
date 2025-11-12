@@ -3,7 +3,7 @@ import { fetchSchoolInfo, fetchSchoolIcon } from "./fetch"; // eslint-disable-li
 import AddReviewSection from "@/components/school/AddReviewSection";
 import ReviewsDisplay from "@/components/school/ReviewsDisplay";
 import Image from "next/image";
-
+import Link from 'next/link';
 export default async function SchoolPage({ params }: { params: Promise<{ school: string }> })
 {
   const { school: slug } = await params;
@@ -195,6 +195,12 @@ export default async function SchoolPage({ params }: { params: Promise<{ school:
                 <button className="w-full bg-gray-100 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-200 transition-colors">
                   Compare Schools
                 </button>
+                <button className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-gray-200 transition-colors">
+                  <a href={`/schools/${slug}/programs`}>
+                    Program Info
+                  </a>
+                </button>
+
               </div>
               
               <div className="mt-6 pt-6 border-t border-gray-200">
