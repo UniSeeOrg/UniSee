@@ -1,6 +1,5 @@
-import { fetchSchoolInfo, fetchSchoolIcon } from "../fetch";
+import { fetchSchoolInfo } from "../fetch";
 import SchoolHeader from "@/components/layout/SchoolHeader";
-import ProgramCard from "@/components/school/programs/ProgramCard";
 import ProgramDropdown from "@/components/school/programs/ProgramDropdown";
 interface ProgramInfo
 {
@@ -32,22 +31,22 @@ export default async function SchoolPrograms({ params }: { params: Promise<{ sch
 
   const schoolType: string = latest.school.peps_ownership;
 
-  let bachelorPrograms: Array<ProgramInfo> = [];
-  let graduatePrograms: Array<ProgramInfo> = [];
+  const bachelorPrograms: Array<ProgramInfo> = [];
+  const graduatePrograms: Array<ProgramInfo> = [];
   
 
   //for program info
   for(let i: number = 0; i < latest.programs.cip_4_digit.length; i++)
   {
-    let current = latest.programs.cip_4_digit[i]
-    let degreeType = current.credential.title
+    const current = latest.programs.cip_4_digit[i]
+    const degreeType = current.credential.title
     
     //this might need to change if degree title info isnt uniform
     const bachelorString = "Bachelor's Degree"
     
-    let name = current.title
-    let earnings = current.earnings.highest["1_yr"].overall_median_earnings
-    let program: ProgramInfo = {name: name, earnings: earnings}
+    const name = current.title
+    const earnings = current.earnings.highest["1_yr"].overall_median_earnings
+    const program: ProgramInfo = {name: name, earnings: earnings}
 
     if(degreeType == bachelorString)
     {
