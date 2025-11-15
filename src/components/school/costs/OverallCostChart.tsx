@@ -16,8 +16,8 @@ export default function OverallCostChart({tuition,roomAndBoard,bookSupply,additi
 
   return(
     <div style={{ width: "100%", height: 200}} className="justify-center items-center flex flex-col">
-      <BarChart width={1000} height={200} data={data} layout="vertical">
-        <XAxis type="number" domain={[0,100000]} hide/>
+      <BarChart width={600} height={200} data={data} layout="vertical">
+        <XAxis type="number" domain={[0,(tuition+roomAndBoard+bookSupply+additionalExpenses)]} hide/>
         <YAxis dataKey="name" type="category" axisLine={false}/>
         <Tooltip  formatter={(value) => `$${Number(value).toLocaleString()}`} contentStyle={{backgroundColor: 'rgba(255, 255, 255, 0.95)', border: '1px solid #ccc', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.15)'}} cursor={{ fill: 'rgba(0, 0, 0, 0.05)' }} />
         <Legend />
