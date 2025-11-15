@@ -200,6 +200,11 @@ export default async function SchoolPage({ params }: { params: Promise<{ school:
                     Program Info
                   </a>
                 </button>
+                <button className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-gray-200 transition-colors">
+                  <a href={`/schools/${slug}/costs`}>
+                    See Costs
+                  </a>
+                </button>
 
               </div>
               
