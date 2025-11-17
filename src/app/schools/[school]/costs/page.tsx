@@ -3,6 +3,8 @@ import SchoolHeader from "@/components/layout/SchoolHeader";
 import OverallCostChart from "@/components/school/costs/OverallCostChart";
 import IncomeLevelChart from "@/components/school/costs/IncomeLevelChart";
 import NetMedianChart from "@/components/school/costs/NetMedianChart";
+import LoanPieChart from "@/components/school/costs/LoanPieChart";
+import AidPieChart from "@/components/school/costs/AidPieChart";
 export default async function SchoolPrograms({ params }: { params: Promise<{ school: string }> })
 {
   const { school: slug } = await params;
@@ -24,6 +26,7 @@ export default async function SchoolPrograms({ params }: { params: Promise<{ sch
   const numGrads : string = latest.student?.grad_students;
   const schoolType: string = latest.school.peps_ownership;
   console.log(latest.cost)
+  console.log(latest.aid)
 
   const inStateTuition = latest.cost.tuition.in_state;
   const outOfStateTuition = latest.cost.tuition.out_of_state;
@@ -31,6 +34,10 @@ export default async function SchoolPrograms({ params }: { params: Promise<{ sch
   const avgBookCost = latest.cost.booksupply;
   const miscExpenses = latest.cost.otherexpense.oncampus;
 
+  const inStateTotal = inStateTuition + roomAndBoard + avgBookCost + miscExpenses;
+  const outOfStateTotal = outOfStateTuition + roomAndBoard + avgBookCost + miscExpenses;
+
+  
 
   const incomeLevel = latest.cost.net_price.consumer.by_income_level
   const under30k = incomeLevel["0-30000"];
@@ -39,12 +46,18 @@ export default async function SchoolPrograms({ params }: { params: Promise<{ sch
   const from75to110k = incomeLevel["750001-111000"];
   const over110k = incomeLevel["110001-plus"];
 
-
-  console.log(latest)
-
   const netPrice = latest.cost.avg_net_price;
   const schoolPrice = netPrice.overall;
-  const medianPrice = netPrice.consumer.overall_median
+  const medianPrice = netPrice.consumer.overall_median;
+
+  const inStateAidApprox = inStateTotal - schoolPrice;
+  const outOfStateAidApprox = outOfStateTotal - schoolPrice;
+
+  const inStatePercent = inStateAidApprox / inStateTotal * 100;
+  const outOfStatePercent = outOfStateAidApprox / outOfStateTotal * 100;
+
+  const percentBorrowing = latest.aid.students_with_any_loan * 100;
+  const studentWithLoans = (Number(numUndergrads) + Number(numGrads)) * (percentBorrowing/100);
 
   return(
     <div className="flex flex-col">
@@ -56,9 +69,45 @@ export default async function SchoolPrograms({ params }: { params: Promise<{ sch
         {/* TODO: toggle in/out of state, on/off campus*/}
 
         <h2 className="mt-10 italic text-2xl md:text-3xl font-extrabold text-blue-500">Total Cost</h2>
-        <OverallCostChart tuition={outOfStateTuition} roomAndBoard={roomAndBoard} bookSupply={avgBookCost} additionalExpenses={miscExpenses}/>
+        
+        <div className="grid grid-cols-2">
+          <OverallCostChart tuition={outOfStateTuition} roomAndBoard={roomAndBoard} bookSupply={avgBookCost} additionalExpenses={miscExpenses}/>
+          <div>
+            <h3>Average Out of State Cost</h3>
+            <p className="text-green-500">${outOfStateTotal.toLocaleString()}</p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2">
+          <OverallCostChart tuition={inStateTuition} roomAndBoard={roomAndBoard} bookSupply={avgBookCost} additionalExpenses={miscExpenses}/>
+          <div>
+            <h3>Average In State Cost</h3>
+            <p className="text-green-500">${inStateTotal.toLocaleString()}</p>
+          </div>
+        </div>
+
+        <h2 className="mt-10 italic text-2xl md:text-3xl font-extrabold text-blue-500">Student Aid</h2>
+        <div className="grid grid-cols-2">
+          <div>
+            <h3>Average In-State Aid</h3>
+            <p>${inStateAidApprox.toLocaleString()} covering about {inStatePercent.toFixed(1)}% of tuition.</p>
+            <AidPieChart percentAid={inStatePercent}/>
+          </div>
+
+          <div>
+           <h3>Average Out of State Aid</h3>
+            <p>${outOfStateAidApprox.toLocaleString()} covering about {outOfStatePercent.toFixed(1)}% of tuition.</p>
+            <AidPieChart percentAid={outOfStatePercent}/>
+          </div>
+        </div>
+          <h3>Loans</h3>
+          <p>About {percentBorrowing.toFixed(1)}% of students receive loans. That's roughly {studentWithLoans.toLocaleString()} students out of {(numGrads+numUndergrads).toLocaleString()}.</p>
+          <LoanPieChart percentLoans={percentBorrowing}/>
+
+
         <h2 className="mt-10 italic text-2xl md:text-3xl font-extrabold text-blue-500">Net Price By Income Group</h2>
         <IncomeLevelChart under30K={under30k} from30To48K={from30to48k} from48To75K={from48to75k} from75To110K={from75to110k} over110K={over110k}/>
+
         <h2 className="mt-10 italic text-2xl md:text-3xl font-extrabold text-blue-500">Net Price vs. Median Price</h2>
         <NetMedianChart program={schoolPrice} median={medianPrice}/>
       </div>
