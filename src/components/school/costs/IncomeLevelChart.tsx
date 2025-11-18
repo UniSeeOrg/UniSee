@@ -8,7 +8,7 @@ interface IncomeLevel
   over110K: number;
 }
 
-import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, CartesianGrid} from "recharts";
+import { BarChart, Bar, XAxis, YAxis, Tooltip } from "recharts";
 
 export default function IncomeLevelChart({under30K,from30To48K, from48To75K,from75To110K,over110K} : IncomeLevel)
 {
