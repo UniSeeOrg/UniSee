@@ -3,7 +3,6 @@ import { fetchSchoolInfo, fetchSchoolIcon } from "./fetch"; // eslint-disable-li
 import AddReviewSection from "@/components/school/AddReviewSection";
 import ReviewsDisplay from "@/components/school/ReviewsDisplay";
 import Image from "next/image";
-import Link from 'next/link';
 export default async function SchoolPage({ params }: { params: Promise<{ school: string }> })
 {
   const { school: slug } = await params;

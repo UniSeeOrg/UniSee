@@ -18,7 +18,6 @@ export default async function SchoolPrograms({ params }: { params: Promise<{ sch
   }
 
   const result = await schoolInfo.data.results?.[0];
-  const schoolId = schoolInfo.uuid;
   const school: { name: string; city: string; state: string; school_url: URL } = result.school;
   const latest = result.latest;
   const {name,city,state,school_url} : {name: string, city: string, state:string,school_url:URL}= school;
@@ -101,7 +100,7 @@ export default async function SchoolPrograms({ params }: { params: Promise<{ sch
           </div>
         </div>
           <h3>Loans</h3>
-          <p>About {percentBorrowing.toFixed(1)}% of students receive loans. That's roughly {studentWithLoans.toLocaleString()} students out of {(numGrads+numUndergrads).toLocaleString()}.</p>
+          <p>About {percentBorrowing.toFixed(1)}% of students receive loans. That&apos;s roughly {studentWithLoans.toLocaleString()} students out of {(numGrads+numUndergrads).toLocaleString()}.</p>
           <LoanPieChart percentLoans={percentBorrowing}/>
 
 

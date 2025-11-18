@@ -30,7 +30,7 @@ export async function getCurrentUser() {
     }
     
     return user;
-  } catch (error) {
+  } catch {
     // Silently handle any errors - user is not authenticated
     // Clear any invalid session data
     try {

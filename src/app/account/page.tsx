@@ -21,7 +21,7 @@ export default function AccountPage() {
   const [password, setPassword] = useState("");
   const [authLoading, setAuthLoading] = useState(false);
   const router = useRouter();
-  const { showSuccess, showError, showInfo } = useToast();
+  const { showSuccess, showError } = useToast();
 
   useEffect(() => {
     const getUser = async () => {

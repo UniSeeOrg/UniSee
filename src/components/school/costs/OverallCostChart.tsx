@@ -5,7 +5,6 @@ interface OverallCost
   roomAndBoard: number;
   bookSupply: number;
   additionalExpenses: number;
-  totalCost:number;
 }
 
 import { BarChart, Bar, XAxis, YAxis, Tooltip } from "recharts";
