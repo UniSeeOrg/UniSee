@@ -2,6 +2,7 @@ import { fetchSchoolInfo, fetchSchoolIcon } from "./fetch"; // eslint-disable-li
 
 import AddReviewSection from "@/components/school/AddReviewSection";
 import ReviewsDisplay from "@/components/school/ReviewsDisplay";
+import SchoolStatsDashboard from "@/components/school/SchoolStatsDashboard";
 import Image from "next/image";
 export default async function SchoolPage({ params }: { params: Promise<{ school: string }> })
 {
@@ -114,7 +115,10 @@ export default async function SchoolPage({ params }: { params: Promise<{ school:
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left Column - School Information */}
           <div className="lg:col-span-2">
-            <div className="bg-white rounded-lg shadow-sm border p-6">
+            {/* School Statistics Dashboard */}
+            <SchoolStatsDashboard schoolId={schoolId} />
+            
+            <div className="bg-white rounded-lg shadow-sm border p-6 mt-8">
               <h2 className="text-2xl font-semibold text-gray-900 mb-6">School Information</h2>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

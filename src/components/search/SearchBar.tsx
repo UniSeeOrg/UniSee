@@ -4,9 +4,64 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { SchoolData } from "@/lib/types/schooldata";
 
+const US_STATES = [
+  { value: "", label: "All States" },
+  { value: "AL", label: "Alabama" },
+  { value: "AK", label: "Alaska" },
+  { value: "AZ", label: "Arizona" },
+  { value: "AR", label: "Arkansas" },
+  { value: "CA", label: "California" },
+  { value: "CO", label: "Colorado" },
+  { value: "CT", label: "Connecticut" },
+  { value: "DE", label: "Delaware" },
+  { value: "FL", label: "Florida" },
+  { value: "GA", label: "Georgia" },
+  { value: "HI", label: "Hawaii" },
+  { value: "ID", label: "Idaho" },
+  { value: "IL", label: "Illinois" },
+  { value: "IN", label: "Indiana" },
+  { value: "IA", label: "Iowa" },
+  { value: "KS", label: "Kansas" },
+  { value: "KY", label: "Kentucky" },
+  { value: "LA", label: "Louisiana" },
+  { value: "ME", label: "Maine" },
+  { value: "MD", label: "Maryland" },
+  { value: "MA", label: "Massachusetts" },
+  { value: "MI", label: "Michigan" },
+  { value: "MN", label: "Minnesota" },
+  { value: "MS", label: "Mississippi" },
+  { value: "MO", label: "Missouri" },
+  { value: "MT", label: "Montana" },
+  { value: "NE", label: "Nebraska" },
+  { value: "NV", label: "Nevada" },
+  { value: "NH", label: "New Hampshire" },
+  { value: "NJ", label: "New Jersey" },
+  { value: "NM", label: "New Mexico" },
+  { value: "NY", label: "New York" },
+  { value: "NC", label: "North Carolina" },
+  { value: "ND", label: "North Dakota" },
+  { value: "OH", label: "Ohio" },
+  { value: "OK", label: "Oklahoma" },
+  { value: "OR", label: "Oregon" },
+  { value: "PA", label: "Pennsylvania" },
+  { value: "RI", label: "Rhode Island" },
+  { value: "SC", label: "South Carolina" },
+  { value: "SD", label: "South Dakota" },
+  { value: "TN", label: "Tennessee" },
+  { value: "TX", label: "Texas" },
+  { value: "UT", label: "Utah" },
+  { value: "VT", label: "Vermont" },
+  { value: "VA", label: "Virginia" },
+  { value: "WA", label: "Washington" },
+  { value: "WV", label: "West Virginia" },
+  { value: "WI", label: "Wisconsin" },
+  { value: "WY", label: "Wyoming" },
+  { value: "DC", label: "District of Columbia" },
+];
 
 export default function SearchBar() {
   const [search, onSearch] = useState<string>("");
+  const [selectedState, setSelectedState] = useState<string>("");
   const [results, setResults] = useState<SchoolData[]>([]);
   const router = useRouter();
 
@@ -28,12 +83,17 @@ export default function SearchBar() {
         );
         const data = await res.json();
 
-        const filtered = (data.results || []).filter((s: SchoolData) => {
+        let filtered = (data.results || []).filter((s: SchoolData) => {
           const input = search.toLowerCase();
           const name = s.school.name.toLowerCase();
           const alias = (s.school.alias || "").toLowerCase();
           return name.includes(input) || alias.includes(input);
         });
+
+        // Filter by state if selected
+        if (selectedState) {
+          filtered = filtered.filter((s: SchoolData) => s.school.state === selectedState);
+        }
 
         setResults(filtered);
       } catch (err) {
@@ -43,15 +103,34 @@ export default function SearchBar() {
     }, 100);
 
     return () => clearTimeout(timer);
-  }, [search]);
+  }, [search, selectedState]);
 
   return (
     <div className="relative w-full">
+      {/* State Filter */}
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Filter by State:
+        </label>
+        <select
+          value={selectedState}
+          onChange={(e) => setSelectedState(e.target.value)}
+          className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+        >
+          {US_STATES.map((state) => (
+            <option key={state.value} value={state.value}>
+              {state.label}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* Search Input */}
       <div className="bg-white rounded-xl py-3 px-4 md:px-6 shadow-lg w-full">
         <input
           className="w-full bg-transparent outline-none text-base md:text-xl"
           type="text"
-          placeholder="Start typing..."
+          placeholder="Start typing school name..."
           value={search}
           onChange={(e) => onSearch(e.target.value)}
         />

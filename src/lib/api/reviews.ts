@@ -38,6 +38,10 @@ export async function getReviews(
   options?: {
     sortBy?: "newest" | "oldest" | "highest" | "lowest";
     minRating?: number;
+    major?: string;
+    search?: string;
+    page?: number;
+    limit?: number;
   }
 ) {
   const params = new URLSearchParams({ schoolId });
@@ -48,6 +52,22 @@ export async function getReviews(
   
   if (options?.minRating !== undefined) {
     params.append("minRating", options.minRating.toString());
+  }
+  
+  if (options?.major) {
+    params.append("major", options.major);
+  }
+  
+  if (options?.search) {
+    params.append("search", options.search);
+  }
+  
+  if (options?.page) {
+    params.append("page", options.page.toString());
+  }
+  
+  if (options?.limit) {
+    params.append("limit", options.limit.toString());
   }
   
   const res = await fetch(`/api/reviews/get?${params.toString()}`);
@@ -71,7 +91,14 @@ export async function getReviews(
     throw new Error("Expected JSON response but got " + contentType);
   }
   
-  return await res.json();
+  const data = await res.json();
+  
+  // Handle both old format (array) and new format (object with reviews and pagination)
+  if (Array.isArray(data)) {
+    return data;
+  }
+  
+  return data;
 }
 
 export async function updateReview(reviewId: string, reviewData: Partial<Review>) {

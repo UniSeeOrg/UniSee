@@ -33,6 +33,7 @@ export default async function SchoolPrograms({ params }: { params: Promise<{ sch
 
   const bachelorPrograms: Array<ProgramInfo> = [];
   const graduatePrograms: Array<ProgramInfo> = [];
+  const phdPrograms: Array<ProgramInfo> = [];
   
 
   //for program info
@@ -43,6 +44,7 @@ export default async function SchoolPrograms({ params }: { params: Promise<{ sch
     
     //this might need to change if degree title info isnt uniform
     const bachelorString = "Bachelor's Degree"
+    const phdString = "Doctor's Degree"
     
     const name = current.title
     const earnings = current.earnings.highest["1_yr"].overall_median_earnings
@@ -52,32 +54,46 @@ export default async function SchoolPrograms({ params }: { params: Promise<{ sch
     {
       bachelorPrograms.push(program)
     }
+    else if(degreeType == phdString || degreeType?.includes("Doctor"))
+    {
+      phdPrograms.push(program)
+    }
     else
     {
       graduatePrograms.push(program) 
     }
-    //Sorting Array<ProgramInfo> with a lambda, sorting A-Z
-    bachelorPrograms.sort((a, b) => {return a.name.localeCompare(b.name);});
-
-    graduatePrograms.sort((a, b) => {return a.name.localeCompare(b.name);});
-    console.log(current)
-
   }
+  
+  // Sorting after all programs are categorized
+  bachelorPrograms.sort((a, b) => {return a.name.localeCompare(b.name);});
+  graduatePrograms.sort((a, b) => {return a.name.localeCompare(b.name);});
+  phdPrograms.sort((a, b) => {return a.name.localeCompare(b.name);});
+  
+  console.log("Bachelor programs:", bachelorPrograms.length);
+  console.log("Graduate programs:", graduatePrograms.length);
+  console.log("PhD programs:", phdPrograms.length);
   console.log(result)
 
 
   return(
     <div className="flex flex-col">
       <SchoolHeader name={name} city={city} state={state} school_url={school_url} numGrads={numGrads} numUndergrads={numUndergrads} schoolType={schoolType}/>
-      <div className="pt-12 flex flex-col items-center justify-center">
+      <div className="pt-12 flex flex-col items-center justify-center gap-8">
         <div>
-          <ProgramDropdown programs={bachelorPrograms} title="Bachelor Programs"/>
+          <ProgramDropdown programs={bachelorPrograms} title="Undergraduate Programs (Bachelor's)"/>
         </div>
 
         <div>
-          <ProgramDropdown programs={graduatePrograms} title="Graduate Programs"/>
+          <ProgramDropdown programs={graduatePrograms} title="Graduate Programs (Master's & Professional)"/>
         </div>
+
+        {phdPrograms.length > 0 && (
+          <div>
+            <ProgramDropdown programs={phdPrograms} title="PhD/Doctoral Programs"/>
+          </div>
+        )}
       </div>
     </div>
   )
 }
+
