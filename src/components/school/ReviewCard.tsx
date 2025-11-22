@@ -13,6 +13,7 @@ interface ReviewCardProps {
   author?: {
     email: string;
     name?: string | null;
+    major?: string | null;
   };
   academics?: number;
   social?: number;
@@ -112,7 +113,15 @@ export default function ReviewCard({
           )}
           <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-2">{title}</h3>
         {author && (
-          <p className="text-sm md:text-base text-gray-600 mb-3">{author.name || author.email}</p>
+          <div className="flex items-center gap-2 flex-wrap mb-3">
+            <p className="text-sm md:text-base text-gray-600">{author.name || author.email}</p>
+            {author.major && (
+              <>
+                <span className="text-gray-400">•</span>
+                <span className="text-sm md:text-base text-blue-600 font-medium">{author.major}</span>
+              </>
+            )}
+          </div>
         )}
       </div>
 

@@ -1,7 +1,9 @@
 "use client"
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createReview } from "@/lib/api/reviews";
 import { useToast } from "@/components/ui/ToastContainer";
+import { getCurrentUser } from "@/lib/utils/supabaseAuth";
+import { supabaseClient } from "@/lib/supabase/client";
 
 import {Review} from "@/lib/types/reviews";
 export default function ReviewForm({ closeForm, schoolId, authorId }: { closeForm: () => void, schoolId: string, authorId: string})
@@ -18,9 +20,34 @@ export default function ReviewForm({ closeForm, schoolId, authorId }: { closeFor
     career: 0,
     tags: [],
     major: "",
-    authorId: authorId,    // TODO: fill in current user ID before submit
-    schoolId: schoolId// TODO: fill in current school ID before submit
+    authorId: authorId,
+    schoolId: schoolId
   });
+
+  // Fetch user's major and pre-fill the form
+  useEffect(() => {
+    const fetchUserMajor = async () => {
+      try {
+        const currentUser = await getCurrentUser();
+        if (currentUser?.id) {
+          const { data, error } = await supabaseClient
+            .from('User')
+            .select('major')
+            .eq('auth_id', currentUser.id)
+            .single();
+          
+          if (!error && data?.major) {
+            setForm(prev => ({ ...prev, major: data.major }));
+          }
+        }
+      } catch (error) {
+        // Silently fail - user can still enter major manually
+        console.log('Could not fetch user major:', error);
+      }
+    };
+
+    fetchUserMajor();
+  }, []);
 
   const handleChange = (field: string, value: unknown) => 
   {

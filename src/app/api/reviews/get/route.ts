@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/prisma";
+import { supabaseServer } from "@/lib/supabase/server";
 
 export async function GET(req: NextRequest) {
   try {
@@ -90,14 +91,23 @@ export async function GET(req: NextRequest) {
     const formattedReviews = await Promise.all(
       reviews.map(async (review: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
         if (review.authorId) {
-          const author = await prisma.user.findUnique({
-            where: { auth_id: review.authorId },
-            select: { email: true, name: true },
-          });
+          // Fetch user from Supabase (User table is managed by Supabase, not Prisma)
+          const { data: authorData } = await supabaseServer
+            .from("User")
+            .select("email, name, major")
+            .eq("auth_id", review.authorId)
+            .single();
+          
+          const author = authorData ? {
+            email: authorData.email,
+            name: authorData.name || null,
+            major: authorData.major || null,
+          } : null;
+          
           return {
             ...review,
             id: review.id.toString(), // Convert BigInt to string
-            author: author || null,
+            author: author,
           };
         }
         return { ...review, id: review.id.toString(), author: null };

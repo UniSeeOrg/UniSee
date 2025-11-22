@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/prisma";
 import { requireAuth } from "@/lib/utils/auth";
 import { validateReviewUpdate } from "@/lib/utils/validation";
+import { supabaseServer } from "@/lib/supabase/server";
 
 export async function PUT(req: NextRequest) {
   try {
@@ -46,10 +47,12 @@ export async function PUT(req: NextRequest) {
     }
 
     // Verify the user owns this review
-    // Get the user's auth_id from the database
-    const dbUser = await prisma.user.findUnique({
-      where: { auth_id: user.id },
-    });
+    // Get the user's auth_id from the database (User table is managed by Supabase, not Prisma)
+    const { data: dbUser } = await supabaseServer
+      .from("User")
+      .select("id, auth_id")
+      .eq("auth_id", user.id)
+      .single();
 
     if (!dbUser) {
       return NextResponse.json(

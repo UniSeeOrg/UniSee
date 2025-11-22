@@ -13,6 +13,7 @@ interface Review {
   author?: {
     email: string;
     name?: string | null;
+    major?: string | null;
   };
   academics?: number;
   social?: number;

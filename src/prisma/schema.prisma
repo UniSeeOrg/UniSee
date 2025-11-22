@@ -14,6 +14,7 @@ model User {
   name        String?
   auth_id     String?  @unique @db.Uuid
   is_verified Boolean  @default(false)
+  major       String?
   Post        Post[]
   reviews     Review[]
 }

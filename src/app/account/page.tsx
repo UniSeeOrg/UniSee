@@ -10,6 +10,7 @@ interface UserProfile {
   email: string;
   created_at: string;
   is_verified?: boolean;
+  major?: string | null;
 }
 
 export default function AccountPage() {
@@ -20,6 +21,8 @@ export default function AccountPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [authLoading, setAuthLoading] = useState(false);
+  const [major, setMajor] = useState<string>("");
+  const [updatingMajor, setUpdatingMajor] = useState(false);
   const router = useRouter();
   const { showSuccess, showError } = useToast();
 
@@ -95,6 +98,7 @@ export default function AccountPage() {
             
             if (profileResponse.data) {
               setUserProfile(profileResponse.data);
+              setMajor(profileResponse.data.major || "");
             }
           } catch (err) {
             console.error('Error fetching user profile:', err);
@@ -257,6 +261,64 @@ export default function AccountPage() {
                 <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">Account Created</h3>
                 <p className="mt-1 text-lg text-gray-900">
                   {new Date(user.created_at).toLocaleDateString()}
+                </p>
+              </div>
+              
+              <div>
+                <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide mb-2">Major</h3>
+                {userProfile?.major && (
+                  <p className="text-lg text-gray-900 mb-3">Current: <span className="font-semibold">{userProfile.major}</span></p>
+                )}
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    value={major}
+                    onChange={(e) => setMajor(e.target.value)}
+                    placeholder="e.g., Computer Science, Business..."
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder:text-gray-500"
+                  />
+                  <button
+                    onClick={async () => {
+                      if (!userProfile) return;
+                      setUpdatingMajor(true);
+                      try {
+                        const { data, error } = await supabaseClient
+                          .from('User')
+                          .update({ major: major.trim() || null })
+                          .eq('auth_id', user.id)
+                          .select()
+                          .single();
+                        
+                        if (error) {
+                          console.error('Error updating major:', error);
+                          // Provide more specific error message
+                          if (error.code === 'PGRST116' || error.message?.includes('column')) {
+                            showError('Major column not found. Please add "major" column to User table in Supabase.');
+                          } else if (error.message?.includes('permission') || error.message?.includes('policy')) {
+                            showError('Permission denied. Check Row Level Security policies in Supabase.');
+                          } else {
+                            showError(`Failed to update major: ${error.message || 'Unknown error'}`);
+                          }
+                        } else {
+                          showSuccess('Major updated successfully!');
+                          setUserProfile({ ...userProfile, major: major.trim() || null });
+                        }
+                      } catch (err) {
+                        console.error('Exception updating major:', err);
+                        const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+                        showError(`Failed to update major: ${errorMessage}`);
+                      } finally {
+                        setUpdatingMajor(false);
+                      }
+                    }}
+                    disabled={updatingMajor || major === (userProfile?.major || "")}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+                  >
+                    {updatingMajor ? "Saving..." : "Save"}
+                  </button>
+                </div>
+                <p className="mt-1 text-xs text-gray-500">
+                  Your major will be pre-filled when writing reviews. You can override it per review.
                 </p>
               </div>
             </div>

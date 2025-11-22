@@ -3,6 +3,7 @@ import { prisma } from "@/prisma";
 import { requireAuth } from "@/lib/utils/auth";
 import { validateReview } from "@/lib/utils/validation";
 import { rateLimitMiddleware } from "@/lib/utils/rateLimit";
+import { supabaseServer } from "@/lib/supabase/server";
 
 export async function POST(req: NextRequest) {
   try 
@@ -49,10 +50,12 @@ export async function POST(req: NextRequest) {
     const { id: _id, ...reviewDataWithoutId } = reviewData as typeof reviewData & { id?: unknown }; // eslint-disable-line @typescript-eslint/no-unused-vars
     
     // Ensure the authorId matches the authenticated user
-    // Get the user's auth_id from the database
-    const dbUser = await prisma.user.findUnique({
-      where: { auth_id: user.id },
-    });
+    // Get the user's auth_id from the database (User table is managed by Supabase, not Prisma)
+    const { data: dbUser } = await supabaseServer
+      .from("User")
+      .select("id, auth_id")
+      .eq("auth_id", user.id)
+      .single();
     
     if (!dbUser) {
       return NextResponse.json(
