@@ -1,9 +1,10 @@
 import { fetchSchoolInfo, fetchSchoolIcon } from "./fetch"; // eslint-disable-line @typescript-eslint/no-unused-vars
+import Link from "next/link";
 
 import AddReviewSection from "@/components/school/AddReviewSection";
 import ReviewsDisplay from "@/components/school/ReviewsDisplay";
 import SchoolStatsDashboard from "@/components/school/SchoolStatsDashboard";
-import Image from "next/image";
+import SchoolLogo from "@/components/school/SchoolLogo";
 export default async function SchoolPage({ params }: { params: Promise<{ school: string }> })
 {
   const { school: slug } = await params;
@@ -60,15 +61,12 @@ export default async function SchoolPage({ params }: { params: Promise<{ school:
         <div className="container mx-auto px-4 py-8">
           <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
             {/* School Logo */}
-            <div className="flex-shrink-0">
-              <Image 
-                className="w-20 h-20 md:w-24 md:h-24 rounded-lg shadow-md object-contain bg-gray-100" 
-                src={`https://logo.clearbit.com/${school_url}`}
-                alt={`${name} logo`}
-                width={96}
-                height={96}
-              />
-            </div>
+            <SchoolLogo 
+              schoolUrl={school_url}
+              schoolName={name}
+              width={96}
+              height={96}
+            />
             
             {/* School Info */}
             <div className="flex-1">
@@ -195,9 +193,12 @@ export default async function SchoolPage({ params }: { params: Promise<{ school:
                 <button className="w-full bg-gray-100 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-200 transition-colors">
                   Add to Favorites
                 </button>
-                <button className="w-full bg-gray-100 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-200 transition-colors">
+                <Link
+                  href={`/schools/compare?school=${slug}`}
+                  className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors text-center block font-medium"
+                >
                   Compare Schools
-                </button>
+                </Link>
                 <button className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-gray-200 transition-colors">
                   <a href={`/schools/${slug}/programs`}>
                     Program Info

@@ -18,6 +18,9 @@ export default function Header() {
             <Link href="/schools" className="text-gray-600 hover:text-gray-900 transition-colors">
               Browse Schools
             </Link>
+            <Link href="/schools/compare" className="text-gray-600 hover:text-gray-900 transition-colors">
+              Compare Schools
+            </Link>
             <Link href="/account" className="text-gray-600 hover:text-gray-900 transition-colors">
               My Account
             </Link>
@@ -57,6 +60,13 @@ export default function Header() {
                 className="text-gray-600 hover:text-gray-900 transition-colors py-2"
               >
                 Browse Schools
+              </Link>
+              <Link
+                href="/schools/compare"
+                onClick={() => setIsMenuOpen(false)}
+                className="text-gray-600 hover:text-gray-900 transition-colors py-2"
+              >
+                Compare Schools
               </Link>
               <Link
                 href="/account"

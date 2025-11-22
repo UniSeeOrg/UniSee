@@ -3,6 +3,7 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { SchoolData } from "@/lib/types/schooldata";
+import { getLogoUrl, getPlaceholderLogoUrl } from "@/lib/utils/logos";
 
 const US_STATES = [
   { value: "", label: "All States" },
@@ -63,6 +64,7 @@ export default function SearchBar() {
   const [search, onSearch] = useState<string>("");
   const [selectedState, setSelectedState] = useState<string>("");
   const [results, setResults] = useState<SchoolData[]>([]);
+  const [logoErrors, setLogoErrors] = useState<Record<string, boolean>>({});
   const router = useRouter();
 
   useEffect(() => {
@@ -76,12 +78,37 @@ export default function SearchBar() {
         const apiKey = process.env.NEXT_PUBLIC_COLLEGE_SCORECARD_API_KEY;
         if (!apiKey) {
           console.error("COLLEGE_SCORECARD_API_KEY is not configured");
+          setResults([]);
           return;
         }
+
+        // Encode the search query to handle special characters
+        const encodedSearch = encodeURIComponent(search);
         const res = await fetch(
-          `https://api.data.gov/ed/collegescorecard/v1/schools?api_key=${apiKey}&school.name=${search}&sort=latest.student.size:desc`
+          `https://api.data.gov/ed/collegescorecard/v1/schools?api_key=${apiKey}&school.name=${encodedSearch}&sort=latest.student.size:desc&per_page=20`
         );
+
+        // Check if response is OK and content-type is JSON
+        if (!res.ok) {
+          console.error(`API error: ${res.status} ${res.statusText}`);
+          setResults([]);
+          return;
+        }
+
+        const contentType = res.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+          console.error("API returned non-JSON response");
+          setResults([]);
+          return;
+        }
+
         const data = await res.json();
+
+        // Check if data has results array
+        if (!data || !Array.isArray(data.results)) {
+          setResults([]);
+          return;
+        }
 
         let filtered = (data.results || []).filter((s: SchoolData) => {
           const input = search.toLowerCase();
@@ -97,7 +124,7 @@ export default function SearchBar() {
 
         setResults(filtered);
       } catch (err) {
-        console.error(err);
+        console.error("Error fetching schools:", err);
         setResults([]);
       }
     }, 100);
@@ -138,25 +165,35 @@ export default function SearchBar() {
 
       {results.length > 0 && (
         <div className="absolute z-10 w-full mt-2 bg-white rounded-md shadow-lg max-h-60 overflow-auto border border-gray-200">
-          {results.map((school) => (
-            <div key={school.id} className="px-4 py-2 hover:bg-gray-100 cursor-pointer transition-colors" onClick={() => router.push(`/schools/${school.id}`)}>
-              <div className="flex flex-row">
-                <div className="w-12 h-12 flex items-center justify-center bg-gray-100 flex-shrink-0">
-                  <Image
-                    src={`https://logo.clearbit.com/${school.school.school_url || ""}`}
-                    alt={school.school.name}
-                    width={48}
-                    height={48}
-                    className="object-contain rounded-lg shadow-md"
-                  />
-                </div>
-                <div className="flex flex-col px-3 md:px-4 min-w-0 flex-1">
-                  <p className="font-bold text-base md:text-xl truncate">{school.school.name}</p>
-                  <p className="italic font-semibold text-xs md:text-sm text-gray-600">{school.school.city}, {school.school.state}</p>
+          {results.map((school) => {
+            const logoErrorKey = `search-${school.id}`;
+            const logoError = logoErrors[logoErrorKey] || false;
+            const logoSrc = logoError 
+              ? getPlaceholderLogoUrl(school.school.name)
+              : getLogoUrl(school.school.school_url, school.school.name);
+
+            return (
+              <div key={school.id} className="px-4 py-2 hover:bg-gray-100 cursor-pointer transition-colors" onClick={() => router.push(`/schools/${school.id}`)}>
+                <div className="flex flex-row">
+                  <div className="w-12 h-12 flex items-center justify-center bg-gray-100 flex-shrink-0 overflow-hidden rounded-lg">
+                    <Image
+                      src={logoSrc}
+                      alt={school.school.name}
+                      width={48}
+                      height={48}
+                      className="object-contain rounded-lg shadow-md"
+                      onError={() => setLogoErrors(prev => ({ ...prev, [logoErrorKey]: true }))}
+                      unoptimized={logoError}
+                    />
+                  </div>
+                  <div className="flex flex-col px-3 md:px-4 min-w-0 flex-1">
+                    <p className="font-bold text-base md:text-xl truncate">{school.school.name}</p>
+                    <p className="italic font-semibold text-xs md:text-sm text-gray-600">{school.school.city}, {school.school.state}</p>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>
