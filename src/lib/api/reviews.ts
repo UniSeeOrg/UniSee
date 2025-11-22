@@ -144,3 +144,50 @@ export async function deleteReview(reviewId: number)
     throw new Error(errorData.error || `HTTP error! status: ${res.status}`);
   }
 }
+
+export async function getMyReviews(options?: {
+  sortBy?: "newest" | "oldest" | "highest" | "lowest";
+  page?: number;
+  limit?: number;
+}) {
+  const params = new URLSearchParams();
+  
+  if (options?.sortBy) {
+    params.append("sortBy", options.sortBy);
+  }
+  
+  if (options?.page) {
+    params.append("page", options.page.toString());
+  }
+  
+  if (options?.limit) {
+    params.append("limit", options.limit.toString());
+  }
+  
+  const token = await getAuthToken();
+  const headers: HeadersInit = {};
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+  
+  const res = await fetch(`/api/reviews/my-reviews?${params.toString()}`, {
+    headers,
+  });
+  
+  if (!res.ok) {
+    const contentType = res.headers.get("content-type");
+    if (contentType && contentType.includes("application/json")) {
+      const errorData = await res.json().catch(() => ({ error: `HTTP error! status: ${res.status}` }));
+      throw new Error(errorData.error || `HTTP error! status: ${res.status}`);
+    } else {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+  }
+  
+  const contentType = res.headers.get("content-type");
+  if (!contentType || !contentType.includes("application/json")) {
+    throw new Error("Expected JSON response but got " + contentType);
+  }
+  
+  return await res.json();
+}

@@ -4,6 +4,7 @@ import { supabaseClient } from "@/lib/supabase/client";
 import { getCurrentUser } from "@/lib/utils/supabaseAuth";
 import { useToast } from "@/components/ui/ToastContainer";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { MAJORS } from "@/lib/constants/majors";
 
 interface UserProfile {
@@ -329,7 +330,13 @@ export default function AccountPage() {
               </div>
             </div>
 
-            <div className="mt-8 pt-6 border-t border-gray-200">
+            <div className="mt-8 pt-6 border-t border-gray-200 space-y-3">
+              <Link
+                href="/my-reviews"
+                className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors text-center block font-medium"
+              >
+                My Reviews
+              </Link>
               <button
                 onClick={handleLogout}
                 className="w-full bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700 transition-colors"
