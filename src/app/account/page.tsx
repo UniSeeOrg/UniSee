@@ -4,6 +4,7 @@ import { supabaseClient } from "@/lib/supabase/client";
 import { getCurrentUser } from "@/lib/utils/supabaseAuth";
 import { useToast } from "@/components/ui/ToastContainer";
 import { useRouter } from "next/navigation";
+import { MAJORS } from "@/lib/constants/majors";
 
 interface UserProfile {
   id: string;
@@ -270,13 +271,18 @@ export default function AccountPage() {
                   <p className="text-lg text-gray-900 mb-3">Current: <span className="font-semibold">{userProfile.major}</span></p>
                 )}
                 <div className="flex items-center gap-2">
-                  <input
-                    type="text"
+                  <select
                     value={major}
                     onChange={(e) => setMajor(e.target.value)}
-                    placeholder="e.g., Computer Science, Business..."
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder:text-gray-500"
-                  />
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+                  >
+                    <option value="">No major selected</option>
+                    {MAJORS.map((m) => (
+                      <option key={m} value={m}>
+                        {m}
+                      </option>
+                    ))}
+                  </select>
                   <button
                     onClick={async () => {
                       if (!userProfile) return;

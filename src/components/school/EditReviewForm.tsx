@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { updateReview } from "@/lib/api/reviews";
 import { useToast } from "@/components/ui/ToastContainer";
+import { MAJORS } from "@/lib/constants/majors";
 
 import {Review} from "@/lib/types/reviews";
 
@@ -213,14 +214,19 @@ export default function EditReviewForm({ closeForm, reviewId, initialData }: Edi
               <label htmlFor="major" className="block text-sm font-semibold text-gray-900 mb-2">
                 Major <span className="text-gray-500 font-normal">(optional)</span>
               </label>
-              <input
+              <select
                 id="major"
-                type="text"
-                placeholder="e.g., Computer Science"
-                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl bg-white text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all shadow-sm hover:border-gray-300"
-                value={form.major || ''}
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl bg-white text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all shadow-sm hover:border-gray-300"
+                value={form.major || ""}
                 onChange={e => handleChange('major', e.target.value)}
-              />
+              >
+                <option value="">Select a major (optional)</option>
+                {MAJORS.map((m) => (
+                  <option key={m} value={m}>
+                    {m}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
 
