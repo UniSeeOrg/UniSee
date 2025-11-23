@@ -90,10 +90,6 @@ export default function MyReviewsPage() {
     }
   };
 
-  const handleEdit = (reviewId: string) => {
-    setEditingReview(reviewId);
-  };
-
   const handleEditComplete = () => {
     setEditingReview(null);
     // Refresh reviews after editing

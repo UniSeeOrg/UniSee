@@ -289,7 +289,7 @@ export default function AccountPage() {
                       if (!userProfile) return;
                       setUpdatingMajor(true);
                       try {
-                        const { data, error } = await supabaseClient
+                        const { error } = await supabaseClient
                           .from('User')
                           .update({ major: major.trim() || null })
                           .eq('auth_id', user.id)

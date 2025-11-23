@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { useToast } from "@/components/ui/ToastContainer";
@@ -42,7 +42,6 @@ interface SelectedSchool {
 }
 
 export default function CompareSchoolsPage() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const { showError } = useToast();
   const [selectedSchools, setSelectedSchools] = useState<SelectedSchool[]>([]);
@@ -154,15 +153,6 @@ export default function CompareSchoolsPage() {
   const formatPercentage = (value?: number) => {
     if (value === null || value === undefined) return "N/A";
     return `${value.toFixed(1)}%`;
-  };
-
-  const getBestValue = (values: (number | undefined)[]): number | null => {
-    const validValues = values.filter((v): v is number => v !== null && v !== undefined);
-    if (validValues.length === 0) return null;
-    
-    // For acceptance rate, lower is better; for others, higher is better
-    // We'll handle this per metric
-    return Math.max(...validValues);
   };
 
   return (
@@ -511,7 +501,7 @@ export default function CompareSchoolsPage() {
 
           {schoolData.length === 0 && !loading && selectedSchools.length >= 2 && (
             <div className="bg-white rounded-lg shadow-sm border p-12 text-center">
-              <p className="text-gray-600">Click "Compare Schools" to see the comparison</p>
+              <p className="text-gray-600">Click &quot;Compare Schools&quot; to see the comparison</p>
             </div>
           )}
         </div>
