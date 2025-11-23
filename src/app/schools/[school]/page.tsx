@@ -21,9 +21,9 @@ export default async function SchoolPage({ params }: { params: Promise<{ school:
   const schoolId = await schoolInfo.uuid;
   console.log(schoolId);
   //console.log(result.id)
-  const school: { name: string; city: string; state: string; school_url: URL } = result.school;
+  const school: { name: string; city: string; state: string; school_url?: string } = result.school;
   const latest = result.latest;
-  const {name,city,state,school_url} : {name: string, city: string, state:string,school_url:URL}= school;
+  const {name,city,state,school_url} : {name: string, city: string, state:string, school_url?: string}= school;
   const numUndergrads: string = latest.student?.size;
   const numGrads : string = latest.student?.grad_students;
 
@@ -91,19 +91,21 @@ export default async function SchoolPage({ params }: { params: Promise<{ school:
             </div>
             
             {/* Visit Website Button */}
-            <div className="flex-shrink-0">
-              <a 
-                href={`https://${school_url}`} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                Visit Website
-                <svg className="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                </svg>
-              </a>
-            </div>
+            {school_url && (
+              <div className="flex-shrink-0">
+                <a 
+                  href={`https://${school_url}`} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  Visit Website
+                  <svg className="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                  </svg>
+                </a>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -127,14 +129,18 @@ export default async function SchoolPage({ params }: { params: Promise<{ school:
                 
                 <div>
                   <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">Website</h3>
-                  <a 
-                    href={`https://${school_url}`} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="mt-1 text-lg text-blue-600 hover:text-blue-800 hover:underline"
-                  >
-                    {school_url.toString().replace('https://', '')}
-                  </a>
+                  {school_url ? (
+                    <a 
+                      href={`https://${school_url}`} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="mt-1 text-lg text-blue-600 hover:text-blue-800 hover:underline"
+                    >
+                      {school_url.replace(/^https?:\/\//, '')}
+                    </a>
+                  ) : (
+                    <p className="mt-1 text-lg text-gray-500">N/A</p>
+                  )}
                 </div>
                 
                 <div>
