@@ -59,56 +59,56 @@ export default async function SchoolPrograms({ params }: { params: Promise<{ sch
   const studentWithLoans = (Number(numUndergrads) + Number(numGrads)) * (percentBorrowing/100);
 
   return(
-    <div className="flex flex-col">
+    <div className="flex flex-col min-h-screen bg-linear-to-br from-slate-50 to-blue-50">
       <SchoolHeader name={name} city={city} state={state} school_url={school_url} numGrads={numGrads} numUndergrads={numUndergrads} schoolType={schoolType}/>
-      <div className="pt-12 flex flex-col items-center justify-center">
-        <h1 className="text-2xl md:text-5xl font-extrabold text-blue-500">
-          Cost Breakdown for {name}
-        </h1>
+      <div className="pt-12 pb-20 px-4 flex flex-col items-center justify-center max-w-7xl mx-auto w-full">
         {/* TODO: toggle in/out of state, on/off campus*/}
 
-        <h2 className="mt-10 italic text-2xl md:text-3xl font-extrabold text-blue-500">Total Cost</h2>
-        
-        <div className="grid grid-cols-2">
+        <div className="flex flex-row w-4xl mb-12 bg-white rounded-xl shadow-lg p-8">
           <OverallCostChart tuition={outOfStateTuition} roomAndBoard={roomAndBoard} bookSupply={avgBookCost} additionalExpenses={miscExpenses}/>
-          <div>
-            <h3>Average Out of State Cost</h3>
-            <p className="text-green-500">${outOfStateTotal.toLocaleString()}</p>
+          <div className="flex flex-col justify-center items-center text-center w-1/4 pr-8">
+            <h3 className="text-xl font-bold text-gray-700 ">Out of State Cost</h3>
+            <p className="text-4xl font-bold text-green-600">${outOfStateTotal.toLocaleString()}</p>
           </div>
         </div>
 
-        <div className="grid grid-cols-2">
+        <div className="flex flex-row w-4xl mb-12 bg-white rounded-xl shadow-lg p-8">
           <OverallCostChart tuition={inStateTuition} roomAndBoard={roomAndBoard} bookSupply={avgBookCost} additionalExpenses={miscExpenses}/>
-          <div>
-            <h3>Average In State Cost</h3>
-            <p className="text-green-500">${inStateTotal.toLocaleString()}</p>
+          <div className="flex flex-col justify-center items-center text-center w-1/4 pr-8">
+            <h3 className="text-xl font-bold text-gray-700">In State Cost</h3>
+            <p className="text-4xl font-bold text-green-600">${inStateTotal.toLocaleString()}</p>
           </div>
         </div>
 
-        <h2 className="mt-10 italic text-2xl md:text-3xl font-extrabold text-blue-500">Student Aid</h2>
-        <div className="grid grid-cols-2">
-          <div>
-            <h3>Average In-State Aid</h3>
-            <p>${inStateAidApprox.toLocaleString()} covering about {inStatePercent.toFixed(1)}% of tuition.</p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl w-full m-8">
+          <div className="bg-white rounded-xl shadow-lg p-8 flex flex-col items-center text-center">
+            <h3 className="text-xl md:text-2xl font-bold text-gray-700 mb-4">Average In-State Aid</h3>
+            <p className="text-lg text-gray-600 mb-6">${inStateAidApprox.toLocaleString()} covering about <span className="font-bold text-blue-600">{inStatePercent.toFixed(1)}%</span> of tuition.</p>
             <AidPieChart percentAid={inStatePercent}/>
           </div>
 
-          <div>
-           <h3>Average Out of State Aid</h3>
-            <p>${outOfStateAidApprox.toLocaleString()} covering about {outOfStatePercent.toFixed(1)}% of tuition.</p>
+          <div className="bg-white rounded-xl shadow-lg p-8 flex flex-col items-center text-center">
+            <h3 className="text-xl md:text-2xl font-bold text-gray-700 mb-4">Average Out of State Aid</h3>
+            <p className="text-lg text-gray-600 mb-6">${outOfStateAidApprox.toLocaleString()} covering about <span className="font-bold text-blue-600">{outOfStatePercent.toFixed(1)}%</span> of tuition.</p>
             <AidPieChart percentAid={outOfStatePercent}/>
           </div>
         </div>
-          <h3>Loans</h3>
-          <p>About {percentBorrowing.toFixed(1)}% of students receive loans. That&apos;s roughly {studentWithLoans.toLocaleString()} students out of {(numGrads+numUndergrads).toLocaleString()}.</p>
+
+        <div className="bg-white rounded-xl shadow-lg p-8 flex flex-col items-center text-center w-2xl m-8">
+          <h3 className="text-xl md:text-2xl font-bold text-gray-700 mb-4">Loans</h3>
+          <p className="text-lg text-gray-600 mb-6 text-center ">About <span className="font-bold text-blue-600">{percentBorrowing.toFixed(1)}%</span> of students receive loans. That&apos;s roughly <span className="font-bold text-blue-600">{studentWithLoans.toLocaleString()}</span> students out of <span className="font-bold">{(numGrads+numUndergrads).toLocaleString()}</span>.</p>
           <LoanPieChart percentLoans={percentBorrowing}/>
+        </div>
 
+        <div className="bg-white rounded-xl shadow-lg p-8 flex flex-col items-center text-center w-2xl m-8">
+          <h3 className="text-xl md:text-2xl font-bold text-gray-700 mb-4">Net Price by Income Group</h3>
+          <IncomeLevelChart under30K={under30k} from30To48K={from30to48k} from48To75K={from48to75k} from75To110K={from75to110k} over110K={over110k}/>
+        </div>
 
-        <h2 className="mt-10 italic text-2xl md:text-3xl font-extrabold text-blue-500">Net Price By Income Group</h2>
-        <IncomeLevelChart under30K={under30k} from30To48K={from30to48k} from48To75K={from48to75k} from75To110K={from75to110k} over110K={over110k}/>
-
-        <h2 className="mt-10 italic text-2xl md:text-3xl font-extrabold text-blue-500">Net Price vs. Median Price</h2>
-        <NetMedianChart program={schoolPrice} median={medianPrice}/>
+        <div className="bg-white rounded-xl shadow-lg p-8 flex flex-col items-center text-center w-2xl m-8">
+          <h3 className="text-xl md:text-2xl font-bold text-gray-700 mb-4">Net Price vs. Median Price</h3>
+          <NetMedianChart program={schoolPrice} median={medianPrice}/>
+        </div>
       </div>
     </div>
   )
