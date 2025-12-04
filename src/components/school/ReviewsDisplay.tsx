@@ -4,6 +4,7 @@ import { getCurrentUser } from "@/lib/utils/supabaseAuth";
 
 import { getReviews } from "@/lib/api/reviews";
 import ReviewCard from "./ReviewCard";
+import { MAJORS } from "@/lib/constants/majors";
 
 interface Review {
   id: string; // Changed from bigint to string
@@ -67,18 +68,6 @@ export default function ReviewsDisplay({ schoolId }: { schoolId: string }) {
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
-  // Debounce major filter as well
-  const [debouncedMajorFilter, setDebouncedMajorFilter] = useState<string>("");
-  
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedMajorFilter(majorFilter);
-      setPage(1); // Reset to first page when filter changes
-    }, 500);
-
-    return () => clearTimeout(timer);
-  }, [majorFilter]);
-
   useEffect(() => {
     const fetchReviews = async () => {
       try {
@@ -86,7 +75,7 @@ export default function ReviewsDisplay({ schoolId }: { schoolId: string }) {
         const data = await getReviews(schoolId, { 
           sortBy, 
           minRating,
-          major: debouncedMajorFilter || undefined,
+          major: majorFilter || undefined,
           search: debouncedSearchQuery || undefined,
           page,
           limit: 10,
@@ -125,7 +114,7 @@ export default function ReviewsDisplay({ schoolId }: { schoolId: string }) {
     } else {
       setLoading(false);
     }
-  }, [schoolId, sortBy, minRating, debouncedMajorFilter, debouncedSearchQuery, page]);
+  }, [schoolId, sortBy, minRating, majorFilter, debouncedSearchQuery, page]);
 
   // Client-side tag filtering
   useEffect(() => {
@@ -261,16 +250,21 @@ export default function ReviewsDisplay({ schoolId }: { schoolId: string }) {
             <label className="text-base font-semibold text-gray-800 mb-3 block">
               Filter by Major:
             </label>
-            <input
-              type="text"
+            <select
               value={majorFilter}
-              onChange={(e) => setMajorFilter(e.target.value)}
-              placeholder="Enter major name (e.g., Computer Science)..."
-              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white placeholder:text-gray-500"
-            />
-            {majorFilter !== debouncedMajorFilter && (
-              <p className="text-sm text-gray-500 mt-1">Filtering...</p>
-            )}
+              onChange={(e) => {
+                setMajorFilter(e.target.value);
+                setPage(1); // Reset to first page on filter change
+              }}
+              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+            >
+              <option value="">All Majors</option>
+              {MAJORS.map((major) => (
+                <option key={major} value={major}>
+                  {major}
+                </option>
+              ))}
+            </select>
             {majorFilter && (
               <p className="text-xs text-gray-500 mt-1">Note: Only reviews with specified majors will be shown</p>
             )}
@@ -302,7 +296,6 @@ export default function ReviewsDisplay({ schoolId }: { schoolId: string }) {
                 setSelectedTags([]);
                 setMinRating(undefined);
                 setMajorFilter("");
-                setDebouncedMajorFilter("");
                 setSearchQuery("");
                 setDebouncedSearchQuery("");
                 setPage(1);
@@ -349,7 +342,6 @@ export default function ReviewsDisplay({ schoolId }: { schoolId: string }) {
                   setSelectedTags([]);
                   setMinRating(undefined);
                   setMajorFilter("");
-                  setDebouncedMajorFilter("");
                   setSearchQuery("");
                   setDebouncedSearchQuery("");
                   setPage(1);
