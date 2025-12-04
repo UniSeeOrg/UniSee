@@ -31,16 +31,6 @@ export async function GET(req: NextRequest) {
       });
     }
 
-    // Filter by major if provided
-    if (major) {
-      andConditions.push({
-        major: {
-          contains: major,
-          mode: "insensitive",
-        },
-      });
-    }
-
     // Keyword search for title or content
     if (searchQuery) {
       andConditions.push({
@@ -61,8 +51,6 @@ export async function GET(req: NextRequest) {
       });
     }
 
-    const whereClause: any = andConditions.length > 1 ? { AND: andConditions } : andConditions[0]; // eslint-disable-line @typescript-eslint/no-explicit-any
-
     // Build orderBy clause
     let orderBy: any = { id: "desc" }; // eslint-disable-line @typescript-eslint/no-explicit-any
     if (sortBy === "oldest") {
@@ -73,22 +61,21 @@ export async function GET(req: NextRequest) {
       orderBy = { rating: "asc" };
     }
 
-    // Get total count for pagination
-    const totalCount = await prisma.review.count({ where: whereClause });
+    const whereClause: any = andConditions.length > 1 ? { AND: andConditions } : andConditions[0]; // eslint-disable-line @typescript-eslint/no-explicit-any
 
-    // Calculate pagination
+    // If filtering by major, we need to fetch all reviews and filter by author.major after fetching
+    // Since we can't easily join with Supabase User table in Prisma for author.major matching
     const skip = (page - 1) * limit;
-    const totalPages = Math.ceil(totalCount / limit);
-
-    const reviews = await prisma.review.findMany({
+    
+    // Fetch reviews - don't apply skip/take yet if filtering by major (we'll do it after filtering)
+    let reviews = await prisma.review.findMany({
       where: whereClause,
       orderBy: orderBy,
-      skip: skip,
-      take: limit,
+      ...(major ? {} : { skip, take: limit }), // Only apply pagination if not filtering by major
     });
 
     // Format the response to include user info if author exists
-    const formattedReviews = await Promise.all(
+    let formattedReviews = await Promise.all(
       reviews.map(async (review: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
         if (review.authorId) {
           // Fetch user from Supabase (User table is managed by Supabase, not Prisma)
@@ -113,6 +100,60 @@ export async function GET(req: NextRequest) {
         return { ...review, id: review.id.toString(), author: null };
       })
     );
+
+    // Apply client-side filtering for major if needed
+    // This handles cases where review.major is null/empty but author.major matches
+    if (major) {
+      const majorLower = major.toLowerCase().trim();
+      formattedReviews = formattedReviews.filter((review: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
+        // Check if review.major matches (not null, not empty)
+        const reviewMajorMatch = review.major && 
+          review.major.trim() &&
+          review.major.toLowerCase().includes(majorLower);
+        
+        // Check if author.major matches (fallback when review.major is null/empty)
+        const authorMajorMatch = (!review.major || !review.major.trim()) && 
+          review.author?.major &&
+          review.author.major.trim() &&
+          review.author.major.toLowerCase().includes(majorLower);
+        
+        return reviewMajorMatch || authorMajorMatch;
+      });
+
+      // Sort again after filtering
+      if (sortBy === "oldest") {
+        formattedReviews.sort((a: any, b: any) => parseInt(a.id) - parseInt(b.id)); // eslint-disable-line @typescript-eslint/no-explicit-any
+      } else if (sortBy === "highest") {
+        formattedReviews.sort((a: any, b: any) => (b.rating || 0) - (a.rating || 0)); // eslint-disable-line @typescript-eslint/no-explicit-any
+      } else if (sortBy === "lowest") {
+        formattedReviews.sort((a: any, b: any) => (a.rating || 0) - (b.rating || 0)); // eslint-disable-line @typescript-eslint/no-explicit-any
+      } else {
+        formattedReviews.sort((a: any, b: any) => parseInt(b.id) - parseInt(a.id)); // eslint-disable-line @typescript-eslint/no-explicit-any
+      }
+
+      // Calculate total count for pagination (before applying pagination)
+      const totalCount = formattedReviews.length;
+      const totalPages = Math.ceil(totalCount / limit);
+
+      // Apply pagination
+      formattedReviews = formattedReviews.slice(skip, skip + limit);
+
+      return NextResponse.json({
+        reviews: formattedReviews,
+        pagination: {
+          page,
+          limit,
+          totalCount,
+          totalPages,
+          hasNextPage: page < totalPages,
+          hasPreviousPage: page > 1,
+        },
+      });
+    }
+
+    // Get total count for pagination (when not filtering by major)
+    const totalCount = await prisma.review.count({ where: whereClause });
+    const totalPages = Math.ceil(totalCount / limit);
 
     return NextResponse.json({
       reviews: formattedReviews,
