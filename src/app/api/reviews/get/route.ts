@@ -68,7 +68,7 @@ export async function GET(req: NextRequest) {
     const skip = (page - 1) * limit;
     
     // Fetch reviews - don't apply skip/take yet if filtering by major (we'll do it after filtering)
-    let reviews = await prisma.review.findMany({
+    const reviews = await prisma.review.findMany({
       where: whereClause,
       orderBy: orderBy,
       ...(major ? {} : { skip, take: limit }), // Only apply pagination if not filtering by major
